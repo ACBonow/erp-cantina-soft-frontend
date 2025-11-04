@@ -8,9 +8,6 @@ export default defineConfig({
     vue(),
     vuetify({
       autoImport: true,
-      styles: {
-        configFile: 'src/styles/settings.scss',
-      },
     }),
   ],
   resolve: {
