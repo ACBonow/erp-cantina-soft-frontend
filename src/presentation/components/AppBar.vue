@@ -30,7 +30,7 @@
       <v-icon>{{ isDark ? 'mdi-weather-night' : 'mdi-weather-sunny' }}</v-icon>
     </v-btn>
 
-    <!-- User Menu -->
+    <!-- User Menu (Authenticated) -->
     <v-menu v-if="authStore.isAuthenticated">
       <template #activator="{ props }">
         <v-btn icon v-bind="props">
@@ -53,6 +53,12 @@
         </v-list-item>
       </v-list>
     </v-menu>
+
+    <!-- Login Button (Not Authenticated) -->
+    <v-btn v-else @click="router.push({ name: 'login' })" color="white" variant="text">
+      <v-icon left>mdi-login</v-icon>
+      {{ t('auth.login') }}
+    </v-btn>
   </v-app-bar>
 </template>
 
