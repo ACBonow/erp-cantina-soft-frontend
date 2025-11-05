@@ -10,6 +10,18 @@
             <v-card-text class="text-center">
               <p class="text-h6 mb-4">Sistema de Gerenciamento de Cantinas e Bares Escolares</p>
               <v-icon size="120" color="primary">mdi-food</v-icon>
+
+              <!-- Login Button for Unauthenticated Users -->
+              <div v-if="!isAuthenticated" class="mt-8">
+                <v-btn
+                  @click="router.push({ name: 'login' })"
+                  size="large"
+                  color="primary"
+                  prepend-icon="mdi-login"
+                >
+                  Fazer Login
+                </v-btn>
+              </div>
             </v-card-text>
           </v-card>
         </v-col>
@@ -31,13 +43,20 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
+import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { useTheme } from '@/composables/useTheme'
 import { useLocale } from '@/composables/useLocale'
+import { useAuthStore } from '@/store/auth'
 
+const router = useRouter()
 const { t } = useI18n()
 const { isDark, toggleTheme } = useTheme()
 const { toggleLocale } = useLocale()
+const authStore = useAuthStore()
+
+const isAuthenticated = computed(() => authStore.isAuthenticated)
 
 const features = [
   {
