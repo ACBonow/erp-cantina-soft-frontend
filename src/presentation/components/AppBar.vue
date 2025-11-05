@@ -45,19 +45,6 @@
           <v-list-item-subtitle>{{ authStore.user?.email }}</v-list-item-subtitle>
         </v-list-item>
         <v-divider />
-        <v-list-item @click="router.push({ name: 'profile' })">
-          <template #prepend>
-            <v-icon>mdi-account</v-icon>
-          </template>
-          <v-list-item-title>{{ t('nav.profile') }}</v-list-item-title>
-        </v-list-item>
-        <v-list-item @click="router.push({ name: 'settings' })">
-          <template #prepend>
-            <v-icon>mdi-cog</v-icon>
-          </template>
-          <v-list-item-title>{{ t('nav.settings') }}</v-list-item-title>
-        </v-list-item>
-        <v-divider />
         <v-list-item @click="handleLogout">
           <template #prepend>
             <v-icon>mdi-logout</v-icon>
