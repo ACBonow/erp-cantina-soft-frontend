@@ -58,6 +58,11 @@ export class HttpClient {
     const response: AxiosResponse<T> = await this.client.delete(url, config)
     return response.data
   }
+
+  async patch<T>(url: string, data?: any, config?: AxiosRequestConfig): Promise<T> {
+    const response: AxiosResponse<T> = await this.client.patch(url, data, config)
+    return response.data
+  }
 }
 
 export const httpClient = new HttpClient(import.meta.env.VITE_API_URL || 'http://localhost:3001')

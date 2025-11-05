@@ -1,13 +1,32 @@
 <template>
-  <v-app>
-    <router-view />
-  </v-app>
+  <DefaultLayout v-if="isAuthenticated" />
+  <router-view v-else />
 </template>
 
 <script setup lang="ts">
-// App principal
+import { computed, onMounted } from 'vue'
+import { useAuthStore } from '@/store/auth'
+import { useTheme } from '@/composables/useTheme'
+import DefaultLayout from '@/presentation/layouts/DefaultLayout.vue'
+
+const authStore = useAuthStore()
+const { isDark } = useTheme()
+
+// Inicializar autenticação do localStorage
+onMounted(() => {
+  authStore.initializeFromStorage()
+})
+
+const isAuthenticated = computed(() => authStore.isAuthenticated)
 </script>
 
-<style scoped lang="scss">
-// Estilos globais do app
+<style>
+/* Global styles */
+html {
+  overflow-y: auto;
+}
+
+.v-application {
+  font-family: 'Roboto', sans-serif;
+}
 </style>

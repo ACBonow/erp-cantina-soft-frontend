@@ -23,5 +23,17 @@ export const formatCPF = (cpf: string): string => {
 }
 
 export const formatPhone = (phone: string): string => {
-  return phone.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3')
+  if (phone.length === 11) {
+    return phone.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3')
+  }
+  return phone.replace(/(\d{2})(\d{4})(\d{4})/, '($1) $2-$3')
+}
+
+export const removeMask = (value: string): string => {
+  return value.replace(/\D/g, '')
+}
+
+export const truncateText = (text: string, maxLength: number): string => {
+  if (text.length <= maxLength) return text
+  return text.slice(0, maxLength) + '...'
 }

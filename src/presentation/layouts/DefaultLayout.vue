@@ -1,42 +1,23 @@
 <template>
   <v-app>
-    <v-navigation-drawer v-model="drawer" app>
-      <v-list>
-        <v-list-item prepend-icon="mdi-view-dashboard" title="Dashboard" to="/" />
-        <v-list-item prepend-icon="mdi-food" title="Produtos" to="/produtos" />
-        <v-list-item prepend-icon="mdi-cart" title="Vendas" to="/vendas" />
-        <v-list-item prepend-icon="mdi-account-group" title="Clientes" to="/clientes" />
-        <v-list-item prepend-icon="mdi-chart-bar" title="Relatórios" to="/relatorios" />
-      </v-list>
-    </v-navigation-drawer>
-
-    <v-app-bar app color="primary" dark>
-      <v-app-bar-nav-icon @click="drawer = !drawer" />
-      <v-toolbar-title>CantinaSoft</v-toolbar-title>
-      <v-spacer />
-      <v-btn icon @click="handleLogout">
-        <v-icon>mdi-logout</v-icon>
-      </v-btn>
-    </v-app-bar>
+    <AppBar @toggle-drawer="drawer = !drawer" />
+    <NavigationDrawer v-model="drawer" />
 
     <v-main>
-      <slot />
+      <v-container fluid class="pa-4">
+        <router-view />
+      </v-container>
     </v-main>
+
+    <NotificationContainer />
   </v-app>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import { useRouter } from 'vue-router'
+import AppBar from '../components/AppBar.vue'
+import NavigationDrawer from '../components/NavigationDrawer.vue'
+import NotificationContainer from '../components/NotificationContainer.vue'
 
-const router = useRouter()
 const drawer = ref(true)
-
-const handleLogout = () => {
-  router.push('/login')
-}
 </script>
-
-<style scoped lang="scss">
-// Estilos do layout
-</style>

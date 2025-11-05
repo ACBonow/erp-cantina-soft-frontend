@@ -7,7 +7,11 @@
       "Bash(git commit -m \"$(cat <<''EOF''\nInitial commit: Configuração inicial do CantinaSoft Frontend\n\n- Configurado projeto Vue.js 3 com TypeScript\n- Integrado Vuetify 3 para UI/UX\n- Implementado Clean Architecture com separação de camadas:\n  * presentation: componentes, páginas e layouts\n  * domain: entidades, casos de uso e interfaces\n  * infrastructure: repositórios, HTTP client e serviços\n  * shared: utilitários, constantes e tipos\n- Configurado Pinia para gerenciamento de estado\n- Configurado Vue Router com rotas básicas\n- Configurado ESLint e Prettier para Clean Code\n- Adicionado configuração para deploy na Vercel\n- Criado páginas iniciais: Home e Login\n- Implementado layout padrão com navegação\n- Configurado temas e estilos do Vuetify\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")",
       "Bash(git checkout:*)",
       "Bash(git push:*)",
-      "Bash(npm run build:*)"
+      "Bash(npm run build:*)",
+      "Bash(git commit -m \"$(cat <<''EOF''\nfix: Adiciona sass-embedded e corrige configuração do Vuetify\n\n- Adiciona sass-embedded como dependência para compilação de SCSS\n- Remove settings.scss que causava erro de compilação\n- Simplifica configuração do vite-plugin-vuetify\n- Build testado e funcionando corretamente\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")",
+      "Bash(git merge:*)",
+      "Bash(git stash:*)",
+      "Bash(npm install:*)"
     ],
     "deny": [],
     "ask": []
