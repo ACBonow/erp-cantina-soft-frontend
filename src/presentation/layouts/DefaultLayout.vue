@@ -1,5 +1,5 @@
 <template>
-  <v-app>
+  <div>
     <AppBar @toggle-drawer="drawer = !drawer" />
     <NavigationDrawer v-model="drawer" />
 
@@ -10,7 +10,7 @@
     </v-main>
 
     <NotificationContainer />
-  </v-app>
+  </div>
 </template>
 
 <script setup lang="ts">

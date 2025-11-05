@@ -1,5 +1,5 @@
 <template>
-  <default-layout>
+  <div>
     <v-container>
       <v-row>
         <v-col cols="12">
@@ -27,11 +27,17 @@
         </v-col>
       </v-row>
     </v-container>
-  </default-layout>
+  </div>
 </template>
 
 <script setup lang="ts">
-import DefaultLayout from '@/presentation/layouts/DefaultLayout.vue'
+import { useI18n } from 'vue-i18n'
+import { useTheme } from '@/composables/useTheme'
+import { useLocale } from '@/composables/useLocale'
+
+const { t } = useI18n()
+const { isDark, toggleTheme } = useTheme()
+const { toggleLocale } = useLocale()
 
 const features = [
   {

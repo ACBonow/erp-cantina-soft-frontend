@@ -1,6 +1,8 @@
 <template>
-  <DefaultLayout v-if="isAuthenticated" />
-  <router-view v-else />
+  <v-app>
+    <DefaultLayout v-if="isAuthenticated" />
+    <router-view v-else />
+  </v-app>
 </template>
 
 <script setup lang="ts">
