@@ -119,8 +119,8 @@ router.beforeEach(async (to, _from, next) => {
     }
   }
 
-  // If authenticated and trying to access login, redirect to dashboard
-  if (to.name === 'login' && authStore.isAuthenticated) {
+  // If authenticated and trying to access login or home, redirect to dashboard
+  if ((to.name === 'login' || to.name === 'home') && authStore.isAuthenticated) {
     next({ name: 'dashboard' })
     return
   }
