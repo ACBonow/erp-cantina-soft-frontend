@@ -65,4 +65,24 @@ export class HttpClient {
   }
 }
 
-export const httpClient = new HttpClient(import.meta.env.VITE_API_URL || 'http://localhost:3001')
+// Environment-based API URL configuration
+const getApiUrl = (): string => {
+  const envApiUrl = import.meta.env.VITE_API_URL
+
+  // Validate that API URL is configured
+  if (!envApiUrl) {
+    console.warn(
+      '⚠️  VITE_API_URL not configured. Using default: http://localhost:3001'
+    )
+    return 'http://localhost:3001'
+  }
+
+  // Log the configured API URL in development
+  if (import.meta.env.DEV) {
+    console.log(`🌐 API URL configured: ${envApiUrl}`)
+  }
+
+  return envApiUrl
+}
+
+export const httpClient = new HttpClient(getApiUrl())
