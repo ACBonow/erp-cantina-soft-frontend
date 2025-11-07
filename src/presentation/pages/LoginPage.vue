@@ -10,13 +10,27 @@
             </v-card-title>
 
             <v-card-text class="pa-8">
-              <v-form @submit.prevent="handleLogin">
+              <!-- Error Alert -->
+              <v-alert
+                v-if="authStore.error"
+                type="error"
+                variant="tonal"
+                closable
+                class="mb-4"
+                @click:close="authStore.error = null"
+              >
+                {{ authStore.error }}
+              </v-alert>
+
+              <v-form ref="formRef" @submit.prevent="handleLogin">
                 <v-text-field
                   v-model="email"
                   label="Email"
                   prepend-inner-icon="mdi-email"
                   type="email"
                   required
+                  :disabled="authStore.loading"
+                  :rules="[rules.required, rules.email]"
                   class="mb-4"
                 />
 
@@ -27,10 +41,21 @@
                   :type="showPassword ? 'text' : 'password'"
                   :append-inner-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
                   required
+                  :disabled="authStore.loading"
+                  :rules="[rules.required, rules.minLength]"
                   @click:append-inner="showPassword = !showPassword"
                 />
 
-                <v-btn type="submit" block size="large" class="mt-6" color="primary">
+                <v-btn
+                  type="submit"
+                  block
+                  size="large"
+                  class="mt-6"
+                  color="primary"
+                  :loading="authStore.loading"
+                  :disabled="authStore.loading"
+                >
+                  <v-icon start>mdi-login</v-icon>
                   Entrar
                 </v-btn>
               </v-form>
@@ -44,18 +69,50 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
+import { useAuthStore } from '@/store/auth'
+import { useNotification } from '@/composables/useNotification'
 
 const router = useRouter()
+const route = useRoute()
+const authStore = useAuthStore()
+const { showSuccess, showError } = useNotification()
 
+const formRef = ref()
 const email = ref('')
 const password = ref('')
 const showPassword = ref(false)
 
-const handleLogin = () => {
-  // Lógica de login será implementada posteriormente
-  console.log('Login:', { email: email.value, password: password.value })
-  router.push('/')
+// Validation rules
+const rules = {
+  required: (v: string) => !!v || 'Campo obrigatório',
+  email: (v: string) => /.+@.+\..+/.test(v) || 'Email inválido',
+  minLength: (v: string) => v.length >= 6 || 'Senha deve ter no mínimo 6 caracteres',
+}
+
+const handleLogin = async () => {
+  // Validate form
+  const { valid } = await formRef.value.validate()
+  if (!valid) return
+
+  try {
+    // Call login action from store
+    await authStore.login({
+      email: email.value,
+      password: password.value,
+    })
+
+    // Show success message
+    showSuccess('Login realizado com sucesso!')
+
+    // Redirect to the page user was trying to access or dashboard
+    const redirectTo = (route.query.redirect as string) || '/dashboard'
+    router.push(redirectTo)
+  } catch (error: any) {
+    // Error is already handled in the store and displayed in the alert
+    console.error('Login error:', error)
+    showError(authStore.error || 'Erro ao fazer login. Verifique suas credenciais.')
+  }
 }
 </script>
 
