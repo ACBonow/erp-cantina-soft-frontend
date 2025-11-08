@@ -76,7 +76,7 @@ import { useNotification } from '@/composables/useNotification'
 const router = useRouter()
 const route = useRoute()
 const authStore = useAuthStore()
-const { showSuccess, showError } = useNotification()
+const { success: showSuccess, error: showError } = useNotification()
 
 const formRef = ref()
 const email = ref('')
@@ -107,7 +107,7 @@ const handleLogin = async () => {
 
     // Redirect to the page user was trying to access or dashboard
     const redirectTo = (route.query.redirect as string) || '/dashboard'
-    router.push(redirectTo)
+    await router.push(redirectTo)
   } catch (error: any) {
     // Error is already handled in the store and displayed in the alert
     console.error('Login error:', error)
