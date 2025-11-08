@@ -71,12 +71,10 @@
 import { ref } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useAuthStore } from '@/store/auth'
-import { useNotification } from '@/composables/useNotification'
 
 const router = useRouter()
 const route = useRoute()
 const authStore = useAuthStore()
-const { success: showSuccess, error: showError } = useNotification()
 
 const formRef = ref()
 const email = ref('')
@@ -102,16 +100,12 @@ const handleLogin = async () => {
       password: password.value,
     })
 
-    // Show success message
-    showSuccess('Login realizado com sucesso!')
-
     // Redirect to the page user was trying to access or dashboard
     const redirectTo = (route.query.redirect as string) || '/dashboard'
     await router.push(redirectTo)
   } catch (error: any) {
     // Error is already handled in the store and displayed in the alert
     console.error('Login error:', error)
-    showError(authStore.error || 'Erro ao fazer login. Verifique suas credenciais.')
   }
 }
 </script>
