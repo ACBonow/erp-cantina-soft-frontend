@@ -3,36 +3,65 @@ import type {
   LoginDTO,
   RegisterDTO,
   AuthResponse,
+  ApiResponse,
+  VerifyTokenResponse,
 } from '@/domain/repositories/IAuthRepository'
 import type { User } from '@/domain/entities/User'
 import { httpClient } from '../http/httpClient'
 
 export class AuthRepository implements IAuthRepository {
   async login(credentials: LoginDTO): Promise<AuthResponse> {
-    const response = await httpClient.post<AuthResponse>('/auth/login', credentials)
-    if (response.token) {
-      localStorage.setItem('token', response.token)
-      localStorage.setItem('user', JSON.stringify(response.user))
+    const response = await httpClient.post<ApiResponse<AuthResponse>>(
+      '/api/v1/auth/login',
+      credentials,
+    )
+
+    if (response.data.token) {
+      localStorage.setItem('token', response.data.token)
+      localStorage.setItem('user', JSON.stringify(response.data.user))
     }
-    return response
+
+    return response.data
   }
 
   async register(data: RegisterDTO): Promise<AuthResponse> {
-    const response = await httpClient.post<AuthResponse>('/auth/register', data)
-    if (response.token) {
-      localStorage.setItem('token', response.token)
-      localStorage.setItem('user', JSON.stringify(response.user))
+    const response = await httpClient.post<ApiResponse<AuthResponse>>(
+      '/api/v1/auth/register',
+      data,
+    )
+
+    if (response.data.token) {
+      localStorage.setItem('token', response.data.token)
+      localStorage.setItem('user', JSON.stringify(response.data.user))
     }
-    return response
+
+    return response.data
   }
 
-  async verifyToken(token: string): Promise<{ valid: boolean; user?: User }> {
+  async verifyToken(): Promise<{ valid: boolean; user?: User }> {
     try {
-      const response = await httpClient.post<{ valid: boolean; user?: User }>(
-        '/auth/verify',
-        { token },
+      const storedToken = localStorage.getItem('token')
+      if (!storedToken) {
+        return { valid: false }
+      }
+
+      const response = await httpClient.post<ApiResponse<VerifyTokenResponse>>(
+        '/api/v1/auth/verify',
       )
-      return response
+
+      // Convert VerifyTokenResponse to User format
+      const user: User = {
+        id: response.data.userId,
+        email: response.data.email,
+        role: response.data.role as 'admin' | 'manager' | 'responsible' | 'customer',
+        name: response.data.name || '',
+        cpf: '', // Not returned by verify endpoint
+        phone: '', // Not returned by verify endpoint
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      }
+
+      return { valid: true, user }
     } catch (error) {
       return { valid: false }
     }

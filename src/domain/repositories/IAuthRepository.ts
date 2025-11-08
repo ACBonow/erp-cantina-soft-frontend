@@ -20,9 +20,22 @@ export interface AuthResponse {
   expiresIn: string
 }
 
+export interface ApiResponse<T> {
+  status: 'success' | 'error'
+  data: T
+  message?: string
+}
+
+export interface VerifyTokenResponse {
+  userId: string
+  email: string
+  role: string
+  name?: string
+}
+
 export interface IAuthRepository {
   login(credentials: LoginDTO): Promise<AuthResponse>
   register(data: RegisterDTO): Promise<AuthResponse>
-  verifyToken(token: string): Promise<{ valid: boolean; user?: User }>
+  verifyToken(): Promise<{ valid: boolean; user?: User }>
   logout(): void
 }

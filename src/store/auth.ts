@@ -66,7 +66,7 @@ export const useAuthStore = defineStore('auth', () => {
     if (!storedToken) return false
 
     try {
-      const response = await authRepository.verifyToken(storedToken)
+      const response = await authRepository.verifyToken()
       if (response.valid && response.user) {
         token.value = storedToken
         user.value = response.user
