@@ -6,10 +6,10 @@
           <v-card-title class="d-flex align-center justify-space-between">
             <div class="d-flex align-center">
               <v-icon size="32" class="mr-3">mdi-account-group</v-icon>
-              <span class="text-h5">Gerenciar Pessoas</span>
+              <span class="text-h5">{{ t('person.title') }}</span>
             </div>
             <v-btn color="primary" prepend-icon="mdi-plus" @click="openCreateDialog">
-              Nova Pessoa
+              {{ t('person.new') }}
             </v-btn>
           </v-card-title>
 
@@ -20,7 +20,7 @@
                 <v-text-field
                   v-model="searchQuery"
                   prepend-inner-icon="mdi-magnify"
-                  label="Buscar por nome, CPF ou email"
+                  :label="t('person.searchPlaceholder')"
                   clearable
                   @update:model-value="handleSearch"
                 />
@@ -29,7 +29,9 @@
                 <v-select
                   v-model="filterActive"
                   :items="activeFilters"
-                  label="Filtrar por status"
+                  item-title="title"
+                  item-value="value"
+                  :label="t('person.filterByStatus')"
                   @update:model-value="fetchPeople"
                 />
               </v-col>
@@ -39,7 +41,14 @@
             <v-progress-linear v-if="peopleStore.loading" indeterminate color="primary" />
 
             <!-- Error Alert -->
-            <v-alert v-if="peopleStore.hasError" type="error" variant="tonal" closable class="mb-4" @click:close="peopleStore.clearError()">
+            <v-alert
+              v-if="peopleStore.hasError"
+              type="error"
+              variant="tonal"
+              closable
+              class="mb-4"
+              @click:close="peopleStore.clearError()"
+            >
               {{ peopleStore.error }}
             </v-alert>
 
@@ -56,33 +65,40 @@
               </template>
 
               <template #item.phone="{ item }">
-                {{ item.phone ? formatPhone(item.phone) : '-' }}
+                {{ item.phone ? formatPhoneNumber(item.phone) : '-' }}
               </template>
 
               <template #item.active="{ item }">
                 <v-chip :color="item.active ? 'success' : 'error'" size="small">
-                  {{ item.active ? 'Ativo' : 'Inativo' }}
+                  {{ item.active ? t('common.active') : t('common.inactive') }}
                 </v-chip>
               </template>
 
               <template #item.actions="{ item }">
                 <v-btn icon size="small" variant="text" @click="viewDependents(item)">
                   <v-icon>mdi-account-multiple</v-icon>
-                  <v-tooltip activator="parent">Ver Dependentes</v-tooltip>
+                  <v-tooltip activator="parent">{{ t('person.viewDependents') }}</v-tooltip>
                 </v-btn>
                 <v-btn icon size="small" variant="text" @click="editPerson(item)">
                   <v-icon>mdi-pencil</v-icon>
-                  <v-tooltip activator="parent">Editar</v-tooltip>
+                  <v-tooltip activator="parent">{{ t('common.edit') }}</v-tooltip>
                 </v-btn>
                 <v-btn icon size="small" variant="text" color="error" @click="confirmDelete(item)">
                   <v-icon>mdi-delete</v-icon>
-                  <v-tooltip activator="parent">Deletar</v-tooltip>
+                  <v-tooltip activator="parent">{{ t('common.delete') }}</v-tooltip>
                 </v-btn>
+              </template>
+
+              <template #no-data>
+                <div class="text-center py-8">
+                  <v-icon size="64" color="grey">mdi-account-off</v-icon>
+                  <p class="text-h6 mt-4">{{ t('common.noData') }}</p>
+                </div>
               </template>
             </v-data-table>
 
             <!-- Pagination -->
-            <div class="d-flex justify-center mt-4">
+            <div v-if="peopleStore.totalPages > 1" class="d-flex justify-center mt-4">
               <v-pagination
                 v-model="currentPage"
                 :length="peopleStore.totalPages"
@@ -98,49 +114,51 @@
     <v-dialog v-model="dialog" max-width="600px">
       <v-card>
         <v-card-title>
-          <span class="text-h5">{{ isEditing ? 'Editar Pessoa' : 'Nova Pessoa' }}</span>
+          <span class="text-h5">{{ isEditing ? t('person.edit') : t('person.new') }}</span>
         </v-card-title>
 
         <v-card-text>
           <v-form ref="formRef">
             <v-text-field
               v-model="formData.name"
-              label="Nome Completo *"
-              :rules="[(v) => !!v || 'Nome é obrigatório']"
+              :label="`${t('person.name')} *`"
+              :rules="[rules.required]"
               required
             />
 
             <v-text-field
               v-model="formData.cpf"
-              label="CPF *"
-              :rules="[(v) => !!v || 'CPF é obrigatório', (v) => isValidCPF(v) || 'CPF inválido']"
+              :label="`${t('person.cpf')} *`"
+              :rules="[rules.required, rules.cpf]"
               :disabled="isEditing"
               required
+              hint="Ex: 123.456.789-01 ou 12345678901"
             />
 
             <v-text-field
               v-model="formData.email"
-              label="Email"
+              :label="t('person.email')"
               type="email"
-              :rules="[(v) => !v || isValidEmail(v) || 'Email inválido']"
+              :rules="[rules.email]"
             />
 
             <v-text-field
               v-model="formData.phone"
-              label="Telefone"
-              :rules="[(v) => !v || isValidPhone(v) || 'Telefone inválido']"
+              :label="t('person.phone')"
+              :rules="[rules.phone]"
+              hint="Ex: (11) 99999-9999"
             />
 
             <v-text-field
               v-model="formData.birthDate"
-              label="Data de Nascimento"
+              :label="t('person.birthDate')"
               type="date"
             />
 
             <v-switch
               v-if="isEditing"
               v-model="formData.active"
-              label="Ativo"
+              :label="t('common.active')"
               color="success"
             />
           </v-form>
@@ -148,9 +166,9 @@
 
         <v-card-actions>
           <v-spacer />
-          <v-btn text @click="closeDialog">Cancelar</v-btn>
-          <v-btn color="primary" @click="savePerson">
-            {{ isEditing ? 'Salvar' : 'Criar' }}
+          <v-btn text @click="closeDialog">{{ t('common.cancel') }}</v-btn>
+          <v-btn color="primary" :loading="peopleStore.loading" @click="savePerson">
+            {{ t('common.save') }}
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -160,7 +178,7 @@
     <v-dialog v-model="dependentsDialog" max-width="800px">
       <v-card>
         <v-card-title>
-          <span class="text-h5">Dependentes de {{ selectedPerson?.name }}</span>
+          <span class="text-h5">{{ t('person.dependents') }} - {{ selectedPerson?.name }}</span>
         </v-card-title>
 
         <v-card-text>
@@ -171,24 +189,29 @@
               v-for="dependent in peopleStore.dependents"
               :key="dependent.id"
               :title="dependent.name"
-              :subtitle="`CPF: ${formatCpf(dependent.cpf)}`"
+              :subtitle="`${t('person.cpf')}: ${formatCpf(dependent.cpf)}`"
             >
               <template #prepend>
                 <v-avatar color="primary">
                   <v-icon>mdi-account</v-icon>
                 </v-avatar>
               </template>
+              <template #append>
+                <v-chip :color="dependent.active ? 'success' : 'error'" size="small">
+                  {{ dependent.active ? t('common.active') : t('common.inactive') }}
+                </v-chip>
+              </template>
             </v-list-item>
           </v-list>
 
           <v-alert v-else type="info" variant="tonal">
-            Esta pessoa não possui dependentes cadastrados.
+            {{ t('person.noDependents') }}
           </v-alert>
         </v-card-text>
 
         <v-card-actions>
           <v-spacer />
-          <v-btn text @click="dependentsDialog = false">Fechar</v-btn>
+          <v-btn text @click="dependentsDialog = false">{{ t('common.close') }}</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -196,14 +219,18 @@
     <!-- Delete Confirmation Dialog -->
     <v-dialog v-model="deleteDialog" max-width="400px">
       <v-card>
-        <v-card-title>Confirmar Exclusão</v-card-title>
+        <v-card-title>{{ t('common.confirm') }}</v-card-title>
         <v-card-text>
-          Tem certeza que deseja excluir <strong>{{ selectedPerson?.name }}</strong>?
+          {{ t('person.deleteConfirm') }}
+          <br />
+          <strong>{{ selectedPerson?.name }}</strong>
         </v-card-text>
         <v-card-actions>
           <v-spacer />
-          <v-btn text @click="deleteDialog = false">Cancelar</v-btn>
-          <v-btn color="error" @click="deletePerson">Excluir</v-btn>
+          <v-btn text @click="deleteDialog = false">{{ t('common.cancel') }}</v-btn>
+          <v-btn color="error" :loading="peopleStore.loading" @click="deletePerson">
+            {{ t('common.delete') }}
+          </v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -211,17 +238,19 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { usePeopleStore } from '@/store/people'
 import type { Person } from '@/domain/entities/Person'
 import { isValidCPF, isValidEmail, isValidPhone } from '@/shared/utils/validators'
-import { formatCpf as formatCpfUtil, formatPhone as formatPhoneUtil } from '@/shared/utils/formatters'
+import { formatCPF, formatPhone } from '@/shared/utils/formatters'
 
+const { t } = useI18n()
 const peopleStore = usePeopleStore()
 
 // State
 const searchQuery = ref('')
-const filterActive = ref('all')
+const filterActive = ref('active')
 const currentPage = ref(1)
 const dialog = ref(false)
 const dependentsDialog = ref(false)
@@ -239,32 +268,41 @@ const formData = ref({
   active: true,
 })
 
-const activeFilters = [
-  { title: 'Todos', value: 'all' },
-  { title: 'Ativos', value: 'active' },
-  { title: 'Inativos', value: 'inactive' },
-]
+const activeFilters = computed(() => [
+  { title: t('person.all'), value: 'all' },
+  { title: t('person.active'), value: 'active' },
+  { title: t('person.inactive'), value: 'inactive' },
+])
 
-const headers = [
-  { title: 'Nome', key: 'name', sortable: true },
-  { title: 'CPF', key: 'cpf', sortable: true },
-  { title: 'Email', key: 'email', sortable: true },
-  { title: 'Telefone', key: 'phone', sortable: false },
-  { title: 'Status', key: 'active', sortable: true },
-  { title: 'Ações', key: 'actions', sortable: false, align: 'end' },
-]
+const headers = computed(() => [
+  { title: t('person.name'), key: 'name', sortable: true },
+  { title: t('person.cpf'), key: 'cpf', sortable: true },
+  { title: t('person.email'), key: 'email', sortable: true },
+  { title: t('person.phone'), key: 'phone', sortable: false },
+  { title: t('common.status'), key: 'active', sortable: true },
+  { title: t('common.actions'), key: 'actions', sortable: false, align: 'end' },
+])
+
+// Validation rules
+const rules = {
+  required: (v: string) => !!v || t('validation.required'),
+  email: (v: string) => !v || isValidEmail(v) || t('validation.email'),
+  cpf: (v: string) => isValidCPF(v) || t('validation.cpf'),
+  phone: (v: string) => !v || isValidPhone(v) || t('validation.phone'),
+}
 
 // Methods
 function formatCpf(cpf: string): string {
-  return formatCpfUtil(cpf)
+  return formatCPF(cpf)
 }
 
-function formatPhone(phone: string): string {
-  return formatPhoneUtil(phone)
+function formatPhoneNumber(phone: string): string {
+  return formatPhone(phone)
 }
 
 async function fetchPeople() {
-  const activeOnly = filterActive.value === 'active' ? true : filterActive.value === 'inactive' ? false : undefined
+  const activeOnly =
+    filterActive.value === 'active' ? true : filterActive.value === 'inactive' ? false : undefined
   await peopleStore.fetchPeople(currentPage.value, 10, activeOnly as boolean)
 }
 

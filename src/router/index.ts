@@ -30,6 +30,16 @@ const routes: RouteRecordRaw[] = [
       requiresAuth: true,
     },
   },
+  {
+    path: '/people',
+    name: 'people',
+    component: () => import('@/presentation/pages/PeoplePage.vue'),
+    meta: {
+      title: 'Pessoas',
+      requiresAuth: true,
+      roles: ['admin', 'manager'],
+    },
+  },
   // TODO: Descomentar quando as páginas forem criadas
   // {
   //   path: '/customers',
