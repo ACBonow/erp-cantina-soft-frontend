@@ -24,14 +24,16 @@
 
               <v-form ref="formRef" @submit.prevent="handleLogin">
                 <v-text-field
-                  v-model="email"
-                  label="Email"
-                  prepend-inner-icon="mdi-email"
-                  type="email"
+                  v-model="emailOrCpf"
+                  label="Email ou CPF"
+                  prepend-inner-icon="mdi-account"
+                  type="text"
                   required
                   :disabled="authStore.loading"
-                  :rules="[rules.required, rules.email]"
+                  :rules="[rules.required, rules.emailOrCpf]"
                   class="mb-4"
+                  hint="Digite seu email ou CPF"
+                  persistent-hint
                 />
 
                 <v-text-field
@@ -71,20 +73,24 @@
 import { ref } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useAuthStore } from '@/store/auth'
+import { isValidEmailOrCPF } from '@/shared/utils/validators'
 
 const router = useRouter()
 const route = useRoute()
 const authStore = useAuthStore()
 
 const formRef = ref()
-const email = ref('')
+const emailOrCpf = ref('')
 const password = ref('')
 const showPassword = ref(false)
 
 // Validation rules
 const rules = {
   required: (v: string) => !!v || 'Campo obrigatório',
-  email: (v: string) => /.+@.+\..+/.test(v) || 'Email inválido',
+  emailOrCpf: (v: string) => {
+    if (!v) return 'Campo obrigatório'
+    return isValidEmailOrCPF(v) || 'Email ou CPF inválido'
+  },
   minLength: (v: string) => v.length >= 6 || 'Senha deve ter no mínimo 6 caracteres',
 }
 
@@ -95,8 +101,9 @@ const handleLogin = async () => {
 
   try {
     // Call login action from store
+    // The backend accepts both email and CPF in the "email" field
     await authStore.login({
-      email: email.value,
+      email: emailOrCpf.value,
       password: password.value,
     })
 

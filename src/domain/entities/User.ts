@@ -4,9 +4,11 @@ export interface User {
   id: string
   name: string
   email: string
+  cpf?: string
+  phone?: string
   role: UserRole
-  createdAt: string
-  updatedAt: string
+  createdAt: string | Date
+  updatedAt: string | Date
 }
 
 export class UserEntity implements User {
@@ -15,8 +17,10 @@ export class UserEntity implements User {
     public name: string,
     public email: string,
     public role: UserRole,
-    public createdAt: string,
-    public updatedAt: string,
+    public createdAt: string | Date,
+    public updatedAt: string | Date,
+    public cpf?: string,
+    public phone?: string,
   ) {}
 
   isAdmin(): boolean {

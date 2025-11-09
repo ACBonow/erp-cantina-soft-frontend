@@ -45,3 +45,15 @@ export function isValidDate(date: string): boolean {
   const d = new Date(date)
   return d instanceof Date && !isNaN(d.getTime())
 }
+
+export function isValidEmailOrCPF(value: string): boolean {
+  const cleanValue = value.replace(/\D/g, '')
+
+  // Se tiver exatamente 11 dígitos, valida como CPF
+  if (cleanValue.length === 11) {
+    return isValidCPF(value)
+  }
+
+  // Caso contrário, valida como email
+  return isValidEmail(value)
+}
