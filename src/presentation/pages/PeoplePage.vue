@@ -244,6 +244,7 @@ import { usePeopleStore } from '@/store/people'
 import type { Person } from '@/domain/entities/Person'
 import { isValidCPF, isValidEmail, isValidPhone } from '@/shared/utils/validators'
 import { formatCPF, formatPhone } from '@/shared/utils/formatters'
+import { getUserFriendlyError } from '@/shared/utils/errorHandler'
 
 const { t } = useI18n()
 const peopleStore = usePeopleStore()
@@ -387,7 +388,8 @@ async function savePerson() {
     }
     closeDialog()
     await fetchPeople()
-  } catch (error) {
+  } catch (error: any) {
+    // Error is already set in the store with user-friendly message
     console.error('Error saving person:', error)
   }
 }
@@ -411,8 +413,10 @@ async function deletePerson() {
     deleteDialog.value = false
     selectedPerson.value = null
     await fetchPeople()
-  } catch (error) {
+  } catch (error: any) {
+    // Keep dialog open to show error message
     console.error('Error deleting person:', error)
+    // Error message is already displayed in the alert
   }
 }
 

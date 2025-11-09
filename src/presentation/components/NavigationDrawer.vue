@@ -68,11 +68,6 @@ const menuItems = computed(() => {
         title: 'nav.people',
       },
       {
-        to: '/customers',
-        icon: 'mdi-account-group',
-        title: 'nav.customers',
-      },
-      {
         to: '/products',
         icon: 'mdi-package-variant',
         title: 'nav.products',

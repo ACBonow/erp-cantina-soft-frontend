@@ -1,10 +1,14 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
+import { useI18n } from 'vue-i18n'
 import type { Person } from '@/domain/entities/Person'
 import type { CreatePersonDTO, UpdatePersonDTO } from '@/domain/repositories/IPersonRepository'
 import { personRepository } from '@/infrastructure/repositories/PersonRepository'
+import { getUserFriendlyError } from '@/shared/utils/errorHandler'
 
 export const usePeopleStore = defineStore('people', () => {
+  const { t } = useI18n()
+
   // State
   const people = ref<Person[]>([])
   const currentPerson = ref<Person | null>(null)
@@ -34,7 +38,7 @@ export const usePeopleStore = defineStore('people', () => {
       limit.value = response.limit
       totalPages.value = response.totalPages
     } catch (err: any) {
-      error.value = err.message || 'Erro ao carregar pessoas'
+      error.value = getUserFriendlyError(err, t)
       throw err
     } finally {
       loading.value = false
@@ -49,7 +53,7 @@ export const usePeopleStore = defineStore('people', () => {
       currentPerson.value = await personRepository.getById(id)
       return currentPerson.value
     } catch (err: any) {
-      error.value = err.message || 'Erro ao carregar pessoa'
+      error.value = getUserFriendlyError(err, t)
       throw err
     } finally {
       loading.value = false
@@ -64,7 +68,7 @@ export const usePeopleStore = defineStore('people', () => {
       currentPerson.value = await personRepository.getByCpf(cpf)
       return currentPerson.value
     } catch (err: any) {
-      error.value = err.message || 'Pessoa não encontrada'
+      error.value = getUserFriendlyError(err, t)
       throw err
     } finally {
       loading.value = false
@@ -83,7 +87,7 @@ export const usePeopleStore = defineStore('people', () => {
       limit.value = response.limit
       totalPages.value = response.totalPages
     } catch (err: any) {
-      error.value = err.message || 'Erro ao buscar pessoas'
+      error.value = getUserFriendlyError(err, t)
       throw err
     } finally {
       loading.value = false
@@ -100,7 +104,7 @@ export const usePeopleStore = defineStore('people', () => {
       total.value++
       return newPerson
     } catch (err: any) {
-      error.value = err.message || 'Erro ao criar pessoa'
+      error.value = getUserFriendlyError(err, t)
       throw err
     } finally {
       loading.value = false
@@ -122,7 +126,7 @@ export const usePeopleStore = defineStore('people', () => {
       }
       return updatedPerson
     } catch (err: any) {
-      error.value = err.message || 'Erro ao atualizar pessoa'
+      error.value = getUserFriendlyError(err, t)
       throw err
     } finally {
       loading.value = false
@@ -141,7 +145,7 @@ export const usePeopleStore = defineStore('people', () => {
         currentPerson.value = null
       }
     } catch (err: any) {
-      error.value = err.message || 'Erro ao deletar pessoa'
+      error.value = getUserFriendlyError(err, t)
       throw err
     } finally {
       loading.value = false
@@ -156,7 +160,7 @@ export const usePeopleStore = defineStore('people', () => {
       dependents.value = await personRepository.getDependents(responsibleId)
       return dependents.value
     } catch (err: any) {
-      error.value = err.message || 'Erro ao carregar dependentes'
+      error.value = getUserFriendlyError(err, t)
       throw err
     } finally {
       loading.value = false

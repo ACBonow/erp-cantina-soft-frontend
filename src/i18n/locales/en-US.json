@@ -258,6 +258,11 @@
     "network": "Server connection error",
     "unauthorized": "You don't have permission to access this page",
     "notFound": "Resource not found",
-    "serverError": "Internal server error"
+    "serverError": "Internal server error",
+    "cannotDeleteWithDependents": "Cannot delete person with dependents. Please reassign or remove dependents first.",
+    "personNotFound": "Person not found",
+    "cpfAlreadyExists": "CPF already registered in the system",
+    "invalidData": "Invalid data. Please check the fields and try again.",
+    "operationFailed": "Operation failed. Please try again later."
   }
 }

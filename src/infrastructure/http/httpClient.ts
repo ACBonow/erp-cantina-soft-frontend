@@ -30,10 +30,30 @@ export class HttpClient {
     this.client.interceptors.response.use(
       (response) => response,
       (error) => {
+        // Handle 401 Unauthorized - redirect to login
         if (error.response?.status === 401) {
           localStorage.removeItem('token')
           window.location.href = '/login'
         }
+
+        // Extract error message from backend response
+        if (error.response?.data) {
+          const errorData = error.response.data
+
+          // Backend returns { status: 'error', message: '...' }
+          if (errorData.message) {
+            error.message = errorData.message
+          }
+
+          // Handle validation errors
+          if (errorData.errors && Array.isArray(errorData.errors)) {
+            const validationMessages = errorData.errors
+              .map((err: any) => `${err.field}: ${err.message}`)
+              .join(', ')
+            error.message = validationMessages
+          }
+        }
+
         return Promise.reject(error)
       }
     )

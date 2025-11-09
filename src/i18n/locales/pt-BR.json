@@ -258,6 +258,11 @@
     "network": "Erro de conexão com o servidor",
     "unauthorized": "Você não tem permissão para acessar esta página",
     "notFound": "Recurso não encontrado",
-    "serverError": "Erro interno do servidor"
+    "serverError": "Erro interno do servidor",
+    "cannotDeleteWithDependents": "Não é possível deletar uma pessoa que possui dependentes. Por favor, reatribua ou remova os dependentes primeiro.",
+    "personNotFound": "Pessoa não encontrada",
+    "cpfAlreadyExists": "CPF já cadastrado no sistema",
+    "invalidData": "Dados inválidos. Verifique os campos e tente novamente.",
+    "operationFailed": "Operação falhou. Tente novamente mais tarde."
   }
 }
