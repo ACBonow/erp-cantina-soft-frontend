@@ -2,27 +2,87 @@ import type { I18n } from 'vue-i18n'
 
 /**
  * Maps backend error messages to i18n translation keys
+ * Uses exact match first, then partial match
  */
 export function getErrorMessageKey(errorMessage: string): string {
-  const errorMap: Record<string, string> = {
+  // Normalize message for comparison
+  const normalizedMessage = errorMessage.toLowerCase().trim()
+
+  // Exact match mapping (case-insensitive)
+  const exactMatchMap: Record<string, string> = {
+    // Authentication errors
+    'email already registered': 'error.emailAlreadyRegistered',
+    'invalid credentials': 'error.invalidCredentials',
+    'authentication token not provided': 'error.tokenNotProvided',
+    'invalid token': 'error.invalidToken',
+    'token expired': 'error.tokenExpired',
+    'unauthorized': 'error.unauthorized',
+    'forbidden': 'error.forbidden',
+    'insufficient permissions': 'error.insufficientPermissions',
+
     // People/Person errors
-    'Cannot delete person with dependents': 'error.cannotDeleteWithDependents',
-    'Person not found': 'error.personNotFound',
-    'CPF already exists': 'error.cpfAlreadyExists',
-    'CPF already registered': 'error.cpfAlreadyExists',
+    'cannot delete person with dependents. please reassign or remove dependents first.': 'error.cannotDeleteWithDependents',
+    'cannot delete person with dependents': 'error.cannotDeleteWithDependents',
+    'person not found': 'error.personNotFound',
+    'cpf already exists': 'error.cpfAlreadyExists',
+    'cpf already registered': 'error.cpfAlreadyExists',
+    'invalid cpf': 'error.invalidCpf',
+
+    // Customer errors
+    'customer not found': 'error.customerNotFound',
+    'insufficient balance': 'error.insufficientBalance',
+
+    // Product errors
+    'product not found': 'error.productNotFound',
+    'product already exists': 'error.productAlreadyExists',
+
+    // Category errors
+    'category not found': 'error.categoryNotFound',
+    'category already exists': 'error.categoryAlreadyExists',
+    'cannot delete category with products': 'error.cannotDeleteCategoryWithProducts',
+
+    // Sale errors
+    'sale not found': 'error.saleNotFound',
+    'cannot cancel completed sale': 'error.cannotCancelCompletedSale',
+
+    // Inventory errors
+    'inventory not found': 'error.inventoryNotFound',
+    'insufficient stock': 'error.insufficientStock',
+
+    // Validation errors
+    'invalid data': 'error.invalidData',
+    'validation failed': 'error.validationFailed',
+    'invalid email format': 'error.invalidEmail',
+    'invalid phone format': 'error.invalidPhone',
+    'password must be at least 6 characters': 'error.passwordTooShort',
 
     // Generic errors
-    'Invalid data': 'error.invalidData',
-    'Validation failed': 'error.invalidData',
-    'Resource not found': 'error.notFound',
-    'Unauthorized': 'error.unauthorized',
-    'Forbidden': 'error.unauthorized',
-    'Internal server error': 'error.serverError',
+    'resource not found': 'error.notFound',
+    'internal server error': 'error.serverError',
+    'bad request': 'error.badRequest',
   }
 
-  // Check if error message contains any of the mapped keys
-  for (const [key, value] of Object.entries(errorMap)) {
-    if (errorMessage.includes(key)) {
+  // Check for exact match (case-insensitive)
+  if (exactMatchMap[normalizedMessage]) {
+    return exactMatchMap[normalizedMessage]
+  }
+
+  // Partial match mapping (for messages that contain specific keywords)
+  const partialMatchMap: Record<string, string> = {
+    'already registered': 'error.alreadyRegistered',
+    'already exists': 'error.alreadyExists',
+    'not found': 'error.notFound',
+    'invalid': 'error.invalidData',
+    'forbidden': 'error.forbidden',
+    'unauthorized': 'error.unauthorized',
+    'insufficient': 'error.insufficientBalance',
+    'cannot delete': 'error.cannotDelete',
+    'validation': 'error.validationFailed',
+  }
+
+  // Check for partial match
+  for (const [key, value] of Object.entries(partialMatchMap)) {
+    if (normalizedMessage.includes(key)) {
       return value
     }
   }
