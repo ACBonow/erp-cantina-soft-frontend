@@ -142,7 +142,7 @@ export function isValidEmailOrCPF(value: string): boolean {
 
 ### Endpoint de Login
 
-O endpoint `/api/v1/auth/login` aceita CPF ou Email no campo `email`:
+O endpoint `/auth/login` aceita CPF ou Email no campo `email`:
 
 ```typescript
 // Login com Email
@@ -167,14 +167,14 @@ await authStore.login({
 
 Todos os endpoints estão implementados conforme a documentação da API:
 
-- `GET /api/v1/people` - Listar pessoas
-- `GET /api/v1/people/:id` - Buscar por ID
-- `GET /api/v1/people/cpf/:cpf` - Buscar por CPF
-- `GET /api/v1/people/search?q=termo` - Pesquisar
-- `POST /api/v1/people` - Criar pessoa
-- `PUT /api/v1/people/:id` - Atualizar pessoa
-- `DELETE /api/v1/people/:id` - Deletar pessoa
-- `GET /api/v1/people/:id/dependents` - Listar dependentes
+- `GET /people` - Listar pessoas
+- `GET /people/:id` - Buscar por ID
+- `GET /people/cpf/:cpf` - Buscar por CPF
+- `GET /people/search?q=termo` - Pesquisar
+- `POST /people` - Criar pessoa
+- `PUT /people/:id` - Atualizar pessoa
+- `DELETE /people/:id` - Deletar pessoa
+- `GET /people/:id/dependents` - Listar dependentes
 
 ---
 

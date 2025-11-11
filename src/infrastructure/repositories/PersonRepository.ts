@@ -20,23 +20,20 @@ export class PersonRepository implements IPersonRepository {
       activeOnly: activeOnly.toString(),
     })
 
-    const response = await httpClient.get<PersonApiResponse<PersonListResponse>>(
-      `/api/v1/people?${params}`,
-    )
-
-    return response.data
+    // httpClient already unwraps { status: 'success', data: {...} } to just {...}
+    return httpClient.get<PersonListResponse>(`/people?${params}`)
   }
 
   async getById(id: string): Promise<Person> {
-    const response = await httpClient.get<PersonApiResponse<Person>>(`/api/v1/people/${id}`)
-    return response.data
+    // httpClient already unwraps { status: 'success', data: {...} } to just {...}
+    return httpClient.get<Person>(`/people/${id}`)
   }
 
   async getByCpf(cpf: string): Promise<Person> {
     // Remove formatting from CPF
     const cleanCpf = cpf.replace(/[^\d]/g, '')
-    const response = await httpClient.get<PersonApiResponse<Person>>(`/api/v1/people/cpf/${cleanCpf}`)
-    return response.data
+    // httpClient already unwraps { status: 'success', data: {...} } to just {...}
+    return httpClient.get<Person>(`/people/cpf/${cleanCpf}`)
   }
 
   async search(query: string, page: number = 1, limit: number = 10): Promise<PersonListResponse> {
@@ -46,32 +43,27 @@ export class PersonRepository implements IPersonRepository {
       limit: limit.toString(),
     })
 
-    const response = await httpClient.get<PersonApiResponse<PersonListResponse>>(
-      `/api/v1/people/search?${params}`,
-    )
-
-    return response.data
+    // httpClient already unwraps { status: 'success', data: {...} } to just {...}
+    return httpClient.get<PersonListResponse>(`/people/search?${params}`)
   }
 
   async create(data: CreatePersonDTO): Promise<Person> {
-    const response = await httpClient.post<PersonApiResponse<Person>>('/api/v1/people', data)
-    return response.data
+    // httpClient already unwraps { status: 'success', data: {...} } to just {...}
+    return httpClient.post<Person>('/people', data)
   }
 
   async update(id: string, data: UpdatePersonDTO): Promise<Person> {
-    const response = await httpClient.put<PersonApiResponse<Person>>(`/api/v1/people/${id}`, data)
-    return response.data
+    // httpClient already unwraps { status: 'success', data: {...} } to just {...}
+    return httpClient.put<Person>(`/people/${id}`, data)
   }
 
   async delete(id: string): Promise<void> {
-    await httpClient.delete(`/api/v1/people/${id}`)
+    await httpClient.delete(`/people/${id}`)
   }
 
   async getDependents(responsibleId: string): Promise<Person[]> {
-    const response = await httpClient.get<PersonApiResponse<Person[]>>(
-      `/api/v1/people/${responsibleId}/dependents`,
-    )
-    return response.data
+    // httpClient already unwraps { status: 'success', data: {...} } to just {...}
+    return httpClient.get<Person[]>(`/people/${responsibleId}/dependents`)
   }
 }
 

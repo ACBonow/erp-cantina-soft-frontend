@@ -70,7 +70,7 @@
 
 #### 🔓 Login
 ```http
-POST /api/v1/auth/login
+POST /auth/login
 ```
 
 **IMPORTANTE**: O campo `email` aceita tanto email quanto CPF. O sistema detecta automaticamente o tipo de identificador.
@@ -110,7 +110,7 @@ POST /api/v1/auth/login
 **Exemplo JavaScript (Login com Email ou CPF):**
 ```javascript
 async function login(emailOrCpf, password) {
-  const response = await fetch('https://api.example.com/api/v1/auth/login', {
+  const response = await fetch('https://api.example.com/auth/login', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'
@@ -144,7 +144,7 @@ await login('123.456.789-01', 'senha123');
 
 #### 📝 Registro
 ```http
-POST /api/v1/auth/register
+POST /auth/register
 ```
 
 **Request:**
@@ -161,7 +161,7 @@ POST /api/v1/auth/register
 
 #### ✅ Verificar Token
 ```http
-POST /api/v1/auth/verify
+POST /auth/verify
 ```
 
 **Request:**
@@ -175,7 +175,7 @@ POST /api/v1/auth/verify
 
 ### 2. Pessoas (People)
 
-O módulo de Pessoas (`/api/v1/people`) gerencia os dados pessoais de todos os usuários do sistema, incluindo responsáveis e seus dependentes. Este módulo é fundamental para vincular pessoas físicas aos usuários do sistema.
+O módulo de Pessoas (`/people`) gerencia os dados pessoais de todos os usuários do sistema, incluindo responsáveis e seus dependentes. Este módulo é fundamental para vincular pessoas físicas aos usuários do sistema.
 
 #### 📋 Listar Todas as Pessoas
 ```http
