@@ -6,14 +6,21 @@
 - [Autenticação](#autenticação)
 - [Endpoints Principais](#endpoints-principais)
   - [1. Autenticação](#1-autenticação)
-  - [2. Clientes](#2-clientes)
-  - [3. Produtos e Categorias](#3-produtos-e-categorias)
-  - [4. Vendas](#4-vendas)
-  - [5. Inventário](#5-inventário)
-  - [6. Utilitários](#6-utilitários)
+  - [2. Pessoas](#2-pessoas-people)
+  - [3. Clientes](#3-clientes)
+  - [4. Produtos e Categorias](#4-produtos-e-categorias)
+  - [5. Formas de Pagamento](#5-formas-de-pagamento)
+  - [6. Contas (Accounts)](#6-contas-accounts)
+  - [7. Vendas](#7-vendas)
+  - [8. Inventário](#8-inventário)
+  - [9. Utilitários](#9-utilitários)
 - [Estrutura de Respostas](#estrutura-de-respostas)
 - [Tratamento de Erros](#tratamento-de-erros)
 - [Exemplos de Integração](#exemplos-de-integração)
+- [Notas Importantes](#notas-importantes)
+  - [Login com CPF](#login-com-cpf)
+  - [Módulo de Pessoas vs Clientes vs Contas](#módulo-de-pessoas-vs-clientes-vs-contas)
+  - [Sistema de Contas Compartilhadas](#sistema-de-contas-compartilhadas)
 
 ---
 
@@ -66,13 +73,25 @@
 POST /api/v1/auth/login
 ```
 
-**Request:**
+**IMPORTANTE**: O campo `email` aceita tanto email quanto CPF. O sistema detecta automaticamente o tipo de identificador.
+
+**Request com Email:**
 ```json
 {
   "email": "usuario@example.com",
   "password": "senha123"
 }
 ```
+
+**Request com CPF:**
+```json
+{
+  "email": "12345678901",
+  "password": "senha123"
+}
+```
+
+**Nota**: O CPF pode ser enviado com ou sem formatação (123.456.789-01 ou 12345678901)
 
 **Response (200):**
 ```json
@@ -88,15 +107,18 @@ POST /api/v1/auth/login
 }
 ```
 
-**Exemplo JavaScript:**
+**Exemplo JavaScript (Login com Email ou CPF):**
 ```javascript
-async function login(email, password) {
+async function login(emailOrCpf, password) {
   const response = await fetch('https://api.example.com/api/v1/auth/login', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'
     },
-    body: JSON.stringify({ email, password })
+    body: JSON.stringify({
+      email: emailOrCpf,  // Pode ser email ou CPF
+      password
+    })
   });
 
   const data = await response.json();
@@ -110,6 +132,14 @@ async function login(email, password) {
     throw new Error(data.message);
   }
 }
+
+// Uso:
+// Login com email
+await login('usuario@example.com', 'senha123');
+
+// Login com CPF (com ou sem formatação)
+await login('12345678901', 'senha123');
+await login('123.456.789-01', 'senha123');
 ```
 
 #### 📝 Registro
@@ -143,7 +173,335 @@ POST /api/v1/auth/verify
 
 ---
 
-### 2. Clientes
+### 2. Pessoas (People)
+
+O módulo de Pessoas (`/api/v1/people`) gerencia os dados pessoais de todos os usuários do sistema, incluindo responsáveis e seus dependentes. Este módulo é fundamental para vincular pessoas físicas aos usuários do sistema.
+
+#### 📋 Listar Todas as Pessoas
+```http
+GET /api/v1/people?page=1&limit=10&activeOnly=true
+```
+**Permissões**: Requer autenticação
+
+**Query Parameters:**
+- `page` (opcional): Número da página (padrão: 1)
+- `limit` (opcional): Itens por página (padrão: 10)
+- `activeOnly` (opcional): Filtrar apenas pessoas ativas (padrão: true)
+
+**Response (200):**
+```json
+{
+  "status": "success",
+  "data": {
+    "people": [
+      {
+        "id": "550e8400-e29b-41d4-a716-446655440000",
+        "name": "João Silva",
+        "cpf": "12345678901",
+        "email": "joao@example.com",
+        "phone": "11999999999",
+        "birthDate": "1990-05-15T00:00:00.000Z",
+        "responsibleId": null,
+        "active": true,
+        "createdAt": "2025-01-01T10:00:00.000Z",
+        "updatedAt": "2025-01-01T10:00:00.000Z"
+      }
+    ],
+    "total": 50,
+    "page": 1,
+    "limit": 10,
+    "totalPages": 5
+  }
+}
+```
+
+#### 🔍 Buscar Pessoa por ID
+```http
+GET /api/v1/people/:id
+```
+**Permissões**: Requer autenticação
+
+**Response (200):**
+```json
+{
+  "status": "success",
+  "data": {
+    "id": "550e8400-e29b-41d4-a716-446655440000",
+    "name": "Maria Santos",
+    "cpf": "98765432100",
+    "email": "maria@example.com",
+    "phone": "11988888888",
+    "birthDate": "2010-03-20T00:00:00.000Z",
+    "responsibleId": "650e8400-e29b-41d4-a716-446655440001",
+    "active": true,
+    "createdAt": "2025-01-01T10:00:00.000Z",
+    "updatedAt": "2025-01-01T10:00:00.000Z",
+    "responsible": {
+      "id": "650e8400-e29b-41d4-a716-446655440001",
+      "name": "João Silva",
+      "cpf": "12345678901",
+      "email": "joao@example.com"
+    }
+  }
+}
+```
+
+#### 🔍 Buscar Pessoa por CPF
+```http
+GET /api/v1/people/cpf/:cpf
+```
+**Permissões**: Requer autenticação
+
+**Exemplo:**
+```http
+GET /api/v1/people/cpf/12345678901
+```
+
+**Nota**: O CPF pode ser enviado com ou sem formatação (123.456.789-01 ou 12345678901)
+
+**Response (200):**
+```json
+{
+  "status": "success",
+  "data": {
+    "id": "550e8400-e29b-41d4-a716-446655440000",
+    "name": "João Silva",
+    "cpf": "12345678901",
+    "email": "joao@example.com",
+    "phone": "11999999999",
+    "active": true
+  }
+}
+```
+
+#### 🔎 Buscar/Pesquisar Pessoas
+```http
+GET /api/v1/people/search?q=termo&page=1&limit=10
+```
+**Permissões**: Requer autenticação
+
+**Query Parameters:**
+- `q` (obrigatório): Termo de busca (mínimo 2 caracteres)
+- `page` (opcional): Número da página
+- `limit` (opcional): Itens por página
+
+**Busca por**: nome, CPF ou email
+
+**Response (200):**
+```json
+{
+  "status": "success",
+  "data": {
+    "people": [...],
+    "total": 5,
+    "page": 1,
+    "limit": 10,
+    "totalPages": 1
+  }
+}
+```
+
+#### ➕ Criar Pessoa
+```http
+POST /api/v1/people
+```
+**Permissões**: `admin`, `manager`
+
+**Request:**
+```json
+{
+  "name": "Ana Costa",
+  "cpf": "98765432100",
+  "email": "ana@example.com",
+  "phone": "11977777777",
+  "birthDate": "2012-08-10",
+  "responsibleId": "650e8400-e29b-41d4-a716-446655440001"
+}
+```
+
+**Campos Obrigatórios:**
+- `name`: Nome completo (mínimo 3 caracteres)
+- `cpf`: CPF válido (com ou sem formatação)
+
+**Campos Opcionais:**
+- `email`: Email válido
+- `phone`: Telefone (10-11 dígitos)
+- `birthDate`: Data de nascimento (formato: YYYY-MM-DD)
+- `responsibleId`: ID do responsável (se for dependente)
+
+**Response (201):**
+```json
+{
+  "status": "success",
+  "data": {
+    "id": "750e8400-e29b-41d4-a716-446655440000",
+    "name": "Ana Costa",
+    "cpf": "98765432100",
+    "email": "ana@example.com",
+    "phone": "11977777777",
+    "birthDate": "2012-08-10T00:00:00.000Z",
+    "responsibleId": "650e8400-e29b-41d4-a716-446655440001",
+    "active": true,
+    "createdAt": "2025-01-15T14:30:00.000Z",
+    "updatedAt": "2025-01-15T14:30:00.000Z"
+  }
+}
+```
+
+**Exemplo JavaScript:**
+```javascript
+async function createPerson(personData) {
+  const token = localStorage.getItem('authToken');
+  const response = await fetch('https://api.example.com/api/v1/people', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(personData)
+  });
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.message);
+  }
+
+  return await response.json();
+}
+
+// Uso:
+await createPerson({
+  name: 'Ana Costa',
+  cpf: '98765432100',
+  email: 'ana@example.com',
+  phone: '11977777777',
+  birthDate: '2012-08-10',
+  responsibleId: '650e8400-e29b-41d4-a716-446655440001'
+});
+```
+
+#### ✏️ Atualizar Pessoa
+```http
+PUT /api/v1/people/:id
+```
+**Permissões**: `admin`, `manager`
+
+**Request (todos os campos são opcionais):**
+```json
+{
+  "name": "Ana Costa Silva",
+  "email": "ana.silva@example.com",
+  "phone": "11966666666",
+  "birthDate": "2012-08-10",
+  "responsibleId": "650e8400-e29b-41d4-a716-446655440001",
+  "active": true
+}
+```
+
+**Nota**: O CPF não pode ser alterado após criação
+
+**Response (200):**
+```json
+{
+  "status": "success",
+  "data": {
+    "id": "750e8400-e29b-41d4-a716-446655440000",
+    "name": "Ana Costa Silva",
+    "cpf": "98765432100",
+    "email": "ana.silva@example.com",
+    "phone": "11966666666",
+    "active": true,
+    "updatedAt": "2025-01-16T10:00:00.000Z"
+  }
+}
+```
+
+#### 🗑️ Deletar Pessoa
+```http
+DELETE /api/v1/people/:id
+```
+**Permissões**: `admin` apenas
+
+**Importante**:
+- É um soft delete (marca como inativa, não remove do banco)
+- Não é possível deletar uma pessoa que possui dependentes
+
+**Response (200):**
+```json
+{
+  "status": "success",
+  "message": "Person deleted successfully"
+}
+```
+
+**Response (400) - Se tiver dependentes:**
+```json
+{
+  "status": "error",
+  "message": "Cannot delete person with dependents. Please reassign or remove dependents first."
+}
+```
+
+#### 👨‍👩‍👧‍👦 Listar Dependentes
+```http
+GET /api/v1/people/:id/dependents
+```
+**Permissões**: Requer autenticação
+
+**Response (200):**
+```json
+{
+  "status": "success",
+  "data": [
+    {
+      "id": "750e8400-e29b-41d4-a716-446655440000",
+      "name": "Ana Costa",
+      "cpf": "98765432100",
+      "email": "ana@example.com",
+      "phone": "11977777777",
+      "birthDate": "2012-08-10T00:00:00.000Z",
+      "responsibleId": "650e8400-e29b-41d4-a716-446655440001",
+      "active": true
+    },
+    {
+      "id": "760e8400-e29b-41d4-a716-446655440000",
+      "name": "Pedro Costa",
+      "cpf": "11122233344",
+      "email": "pedro@example.com",
+      "birthDate": "2015-02-20T00:00:00.000Z",
+      "responsibleId": "650e8400-e29b-41d4-a716-446655440001",
+      "active": true
+    }
+  ]
+}
+```
+
+**Exemplo JavaScript:**
+```javascript
+async function getDependents(responsibleId) {
+  const token = localStorage.getItem('authToken');
+  const response = await fetch(
+    `https://api.example.com/api/v1/people/${responsibleId}/dependents`,
+    {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
+    }
+  );
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.message);
+  }
+
+  return await response.json();
+}
+```
+
+---
+
+### 3. Clientes
 
 #### 📋 Listar Todos os Clientes
 ```http
@@ -310,7 +668,7 @@ GET /api/v1/customers/:id/balance-history
 
 ---
 
-### 3. Produtos e Categorias
+### 4. Produtos e Categorias
 
 #### 📦 Listar Todos os Produtos
 ```http
@@ -420,7 +778,229 @@ POST /api/v1/categories
 
 ---
 
-### 4. Vendas
+### 5. Formas de Pagamento
+
+#### 📋 Listar Todas as Formas de Pagamento
+```http
+GET /api/v1/payment-methods?page=1&limit=10
+```
+
+**Response (200):**
+```json
+{
+  "paymentMethods": [
+    {
+      "id": "750e8400-e29b-41d4-a716-446655440000",
+      "name": "cash",
+      "displayName": "Dinheiro",
+      "description": "Pagamento em dinheiro",
+      "active": true,
+      "requiresAccount": false,
+      "createdAt": "2025-01-01T10:00:00.000Z",
+      "updatedAt": "2025-01-01T10:00:00.000Z"
+    },
+    {
+      "id": "760e8400-e29b-41d4-a716-446655440000",
+      "name": "card",
+      "displayName": "Maquininha",
+      "description": "Pagamento com cartão",
+      "active": true,
+      "requiresAccount": false,
+      "createdAt": "2025-01-01T10:00:00.000Z",
+      "updatedAt": "2025-01-01T10:00:00.000Z"
+    },
+    {
+      "id": "770e8400-e29b-41d4-a716-446655440000",
+      "name": "account",
+      "displayName": "Saldo da Conta",
+      "description": "Débito do saldo da conta do cliente",
+      "active": true,
+      "requiresAccount": true,
+      "createdAt": "2025-01-01T10:00:00.000Z",
+      "updatedAt": "2025-01-01T10:00:00.000Z"
+    }
+  ],
+  "total": 3,
+  "page": 1,
+  "limit": 10,
+  "totalPages": 1
+}
+```
+
+#### 📋 Listar Formas de Pagamento Ativas
+```http
+GET /api/v1/payment-methods/active
+```
+
+**Response (200):**
+```json
+{
+  "paymentMethods": [
+    {
+      "id": "750e8400-e29b-41d4-a716-446655440000",
+      "name": "cash",
+      "displayName": "Dinheiro",
+      "active": true,
+      "requiresAccount": false
+    }
+  ]
+}
+```
+
+---
+
+### 6. Contas (Accounts)
+
+O sistema de contas permite que clientes tenham saldo e limite de crédito. Uma conta está vinculada a uma pessoa e pode ser compartilhada entre responsáveis e dependentes.
+
+#### 📋 Listar Todas as Contas
+```http
+GET /api/v1/accounts?page=1&limit=10
+```
+
+**Response (200):**
+```json
+{
+  "accounts": [
+    {
+      "id": "850e8400-e29b-41d4-a716-446655440000",
+      "personId": "550e8400-e29b-41d4-a716-446655440000",
+      "personName": "João Silva",
+      "personCpf": "12345678901",
+      "personEmail": "joao@example.com",
+      "balance": 150.00,
+      "creditLimit": 50.00,
+      "allowNegative": true,
+      "active": true,
+      "createdAt": "2025-01-01T10:00:00.000Z",
+      "updatedAt": "2025-01-01T10:00:00.000Z"
+    }
+  ],
+  "total": 50,
+  "page": 1,
+  "limit": 10,
+  "totalPages": 5
+}
+```
+
+#### 🔍 Buscar Saldo da Conta
+```http
+GET /api/v1/accounts/:id/balance
+```
+
+**Response (200):**
+```json
+{
+  "accountId": "850e8400-e29b-41d4-a716-446655440000",
+  "personId": "550e8400-e29b-41d4-a716-446655440000",
+  "personName": "João Silva",
+  "currentBalance": 150.00,
+  "creditLimit": 50.00,
+  "availableCredit": 200.00,
+  "allowNegative": true
+}
+```
+
+**Nota:** `availableCredit` é a soma do saldo atual + limite de crédito (quando `allowNegative` = true)
+
+#### 💰 Adicionar Crédito na Conta
+```http
+POST /api/v1/accounts/:id/credit
+```
+
+**Request:**
+```json
+{
+  "amount": 100.00,
+  "description": "Recarga mensal"
+}
+```
+
+**Response (200):**
+```json
+{
+  "status": "success",
+  "message": "Credit added successfully",
+  "data": {
+    "id": "950e8400-e29b-41d4-a716-446655440000",
+    "accountId": "850e8400-e29b-41d4-a716-446655440000",
+    "amount": 100.00,
+    "type": "credit",
+    "description": "Recarga mensal",
+    "userId": "650e8400-e29b-41d4-a716-446655440000",
+    "userName": "Admin User",
+    "createdAt": "2025-01-15T14:30:00.000Z"
+  }
+}
+```
+
+#### 💸 Debitar Crédito da Conta
+```http
+POST /api/v1/accounts/:id/debit
+```
+
+**Request:**
+```json
+{
+  "amount": 10.00,
+  "description": "Ajuste manual"
+}
+```
+
+#### 📊 Histórico de Transações
+```http
+GET /api/v1/accounts/:id/transactions
+```
+
+**Response (200):**
+```json
+{
+  "transactions": [
+    {
+      "id": "950e8400-e29b-41d4-a716-446655440000",
+      "accountId": "850e8400-e29b-41d4-a716-446655440000",
+      "amount": 100.00,
+      "type": "credit",
+      "description": "Recarga mensal",
+      "userId": "650e8400-e29b-41d4-a716-446655440000",
+      "userName": "Admin User",
+      "createdAt": "2025-01-15T14:30:00.000Z"
+    },
+    {
+      "id": "960e8400-e29b-41d4-a716-446655440000",
+      "accountId": "850e8400-e29b-41d4-a716-446655440000",
+      "amount": 25.50,
+      "type": "debit",
+      "description": "Sale #650e8400-e29b-41d4-a716-446655440000",
+      "userId": "650e8400-e29b-41d4-a716-446655440000",
+      "userName": "Admin User",
+      "createdAt": "2025-01-15T12:30:00.000Z"
+    }
+  ]
+}
+```
+
+#### ✏️ Atualizar Limite de Crédito
+```http
+PUT /api/v1/accounts/:id
+```
+
+**Request:**
+```json
+{
+  "creditLimit": 100.00,
+  "allowNegative": true
+}
+```
+
+**Importante:**
+- `creditLimit`: Valor máximo que o saldo pode ficar negativo
+- `allowNegative`: Se `true`, permite que o saldo fique negativo até o `creditLimit`
+- Exemplo: `balance = -30.00`, `creditLimit = 50.00` → Cliente ainda pode gastar R$ 20,00
+
+---
+
+### 7. Vendas
 
 #### 🛒 Listar Todas as Vendas
 ```http
@@ -438,7 +1018,9 @@ GET /api/v1/sales?page=1&limit=10&customerId=uuid&status=completed&startDate=202
       "userId": "850e8400-e29b-41d4-a716-446655440000",
       "userName": "João Silva",
       "totalAmount": 25.50,
-      "paymentMethod": "credit",
+      "paymentMethod": "account",
+      "paymentMethodId": "770e8400-e29b-41d4-a716-446655440000",
+      "paymentMethodName": "Saldo da Conta",
       "status": "completed",
       "createdAt": "2025-01-15T12:30:00.000Z",
       "updatedAt": "2025-01-15T12:30:00.000Z",
@@ -486,7 +1068,7 @@ POST /api/v1/sales
 ```json
 {
   "customerId": "550e8400-e29b-41d4-a716-446655440000",
-  "paymentMethod": "credit",
+  "paymentMethodId": "770e8400-e29b-41d4-a716-446655440000",
   "items": [
     {
       "productId": "450e8400-e29b-41d4-a716-446655440000",
@@ -499,6 +1081,14 @@ POST /api/v1/sales
   ]
 }
 ```
+
+**Importante:**
+- `paymentMethodId`: ID da forma de pagamento (obtenha via `/api/v1/payment-methods/active`)
+- Se a forma de pagamento requer conta (`requiresAccount = true`), o sistema verifica:
+  - Se o cliente possui uma conta ativa
+  - Se há saldo suficiente (considerando `balance + creditLimit` se `allowNegative = true`)
+- O estoque é automaticamente atualizado para cada produto
+- Transações de conta são criadas automaticamente
 
 **Response (201):**
 ```json
@@ -631,7 +1221,7 @@ GET /api/v1/customers/:customerId/sales
 
 ---
 
-### 5. Inventário
+### 8. Inventário
 
 #### 📦 Listar Todo o Inventário
 ```http
@@ -805,7 +1395,7 @@ GET /api/v1/inventory/:inventoryId/movements
 
 ---
 
-### 6. Utilitários
+### 9. Utilitários
 
 #### ✅ Health Check Geral
 ```http
@@ -1154,6 +1744,57 @@ class ApiService {
     return this.request(`/customers/${customerId}/balance-history`);
   }
 
+  // Métodos de pessoas
+  async getPeople(page = 1, limit = 10, activeOnly = true) {
+    const params = new URLSearchParams({
+      page: page.toString(),
+      limit: limit.toString(),
+      activeOnly: activeOnly.toString()
+    }).toString();
+    return this.request(`/people?${params}`);
+  }
+
+  async getPerson(id) {
+    return this.request(`/people/${id}`);
+  }
+
+  async getPersonByCpf(cpf) {
+    return this.request(`/people/cpf/${cpf}`);
+  }
+
+  async searchPeople(searchTerm, page = 1, limit = 10) {
+    const params = new URLSearchParams({
+      q: searchTerm,
+      page: page.toString(),
+      limit: limit.toString()
+    }).toString();
+    return this.request(`/people/search?${params}`);
+  }
+
+  async createPerson(personData) {
+    return this.request('/people', {
+      method: 'POST',
+      body: JSON.stringify(personData)
+    });
+  }
+
+  async updatePerson(id, personData) {
+    return this.request(`/people/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(personData)
+    });
+  }
+
+  async deletePerson(id) {
+    return this.request(`/people/${id}`, {
+      method: 'DELETE'
+    });
+  }
+
+  async getDependents(responsibleId) {
+    return this.request(`/people/${responsibleId}/dependents`);
+  }
+
   // Métodos de produtos
   async getProducts(params = {}) {
     const query = new URLSearchParams(params).toString();
@@ -1309,6 +1950,53 @@ async function loadCustomers() {
   }
 }
 
+// Listar pessoas
+async function loadPeople() {
+  try {
+    const data = await api.getPeople(1, 20, true);
+    console.log('People:', data.data.people);
+  } catch (error) {
+    console.error('Failed to load people:', error.message);
+  }
+}
+
+// Buscar pessoa por CPF
+async function findPersonByCpf(cpf) {
+  try {
+    const data = await api.getPersonByCpf(cpf);
+    console.log('Person found:', data.data);
+  } catch (error) {
+    console.error('Person not found:', error.message);
+  }
+}
+
+// Criar pessoa
+async function registerPerson() {
+  try {
+    const person = await api.createPerson({
+      name: 'Ana Costa',
+      cpf: '98765432100',
+      email: 'ana@example.com',
+      phone: '11977777777',
+      birthDate: '2012-08-10',
+      responsibleId: '650e8400-e29b-41d4-a716-446655440001'
+    });
+    console.log('Person created:', person);
+  } catch (error) {
+    console.error('Failed to create person:', error.message);
+  }
+}
+
+// Buscar dependentes de um responsável
+async function loadDependents(responsibleId) {
+  try {
+    const data = await api.getDependents(responsibleId);
+    console.log('Dependents:', data.data);
+  } catch (error) {
+    console.error('Failed to load dependents:', error.message);
+  }
+}
+
 // Criar venda
 async function processSale(customerId, items) {
   try {
@@ -1419,6 +2107,177 @@ Em caso de dúvidas ou problemas:
 
 ---
 
-**Versão**: 1.0.0
+## 📝 Notas Importantes
+
+### Login com CPF
+
+A API suporta login tanto com email quanto com CPF. O sistema detecta automaticamente o tipo de identificador:
+
+**Características:**
+- O campo `email` no endpoint `/api/v1/auth/login` aceita ambos os formatos
+- CPF pode ser enviado com ou sem formatação (123.456.789-01 ou 12345678901)
+- A validação de CPF é feita automaticamente
+- Se o identificador tiver 11 dígitos numéricos, é tratado como CPF
+- Caso contrário, é validado como email
+
+**Exemplo de UI:**
+```javascript
+// Componente de login que aceita email ou CPF
+function LoginForm() {
+  const [identifier, setIdentifier] = useState('');
+  const [password, setPassword] = useState('');
+
+  const handleLogin = async () => {
+    try {
+      // O backend detecta automaticamente se é email ou CPF
+      await api.login(identifier, password);
+      // Redirecionar para dashboard
+    } catch (error) {
+      // Mostrar erro
+      alert(error.message);
+    }
+  };
+
+  return (
+    <form onSubmit={(e) => { e.preventDefault(); handleLogin(); }}>
+      <input
+        type="text"
+        placeholder="Email ou CPF"
+        value={identifier}
+        onChange={(e) => setIdentifier(e.target.value)}
+      />
+      <input
+        type="password"
+        placeholder="Senha"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+      />
+      <button type="submit">Entrar</button>
+    </form>
+  );
+}
+```
+
+### Módulo de Pessoas vs Clientes vs Contas
+
+**Pessoas (`/api/v1/people`)**:
+- Cadastro de dados pessoais (CPF, nome, telefone, etc.)
+- Gerenciamento de responsáveis e dependentes
+- Base para todos os usuários do sistema
+- Utilizado para login com CPF
+
+**Clientes (`/api/v1/customers`)**:
+- Focado em funcionalidades da cantina
+- Histórico de compras
+- Vinculado a uma pessoa através do `person_id`
+- Vinculado a uma conta através do `account_id`
+
+**Contas (`/api/v1/accounts`)**:
+- Gerenciamento de saldo e créditos
+- Sistema de crédito com limite configurável
+- Pode ser compartilhada entre responsável e dependentes
+- Vinculada a uma pessoa através do `person_id`
+- Histórico de transações financeiras
+
+**Fluxo Recomendado:**
+1. Criar pessoa no módulo de Pessoas
+2. Criar conta para a pessoa (se necessário usar sistema de crédito)
+3. Criar cliente vinculado à pessoa e à conta
+4. Usuário pode fazer login com CPF
+5. Sistema busca dados pessoais, dados de cliente e dados da conta
+
+**Sistema de Contas Compartilhadas:**
+
+O sistema permite que responsáveis e dependentes compartilhem a mesma conta:
+
+```
+Responsável (João Silva)
+  └─ Pessoa ID: 123
+  └─ Conta ID: 456 (saldo: R$ 100,00, crédito: R$ 50,00)
+      └─ Dependente 1 (Maria Silva - Filha)
+          └─ Pessoa ID: 789
+          └─ Usa a mesma Conta ID: 456
+      └─ Dependente 2 (Pedro Silva - Filho)
+          └─ Pessoa ID: 101
+          └─ Usa a mesma Conta ID: 456
+```
+
+**Como funciona:**
+1. Responsável e dependentes possuem registros separados na tabela `people`
+2. Todos podem ter registros na tabela `customers`
+3. Todos os `customers` do grupo familiar apontam para a mesma `account_id`
+4. Quando qualquer um do grupo faz uma compra usando a conta, o saldo é debitado da conta compartilhada
+5. Recargas de crédito podem ser feitas por qualquer atendente e beneficiam todo o grupo
+
+**Exemplo de Implementação:**
+
+```javascript
+// 1. Criar pessoa responsável
+const responsavel = await api.createPerson({
+  name: 'João Silva',
+  cpf: '12345678901',
+  email: 'joao@example.com',
+  phone: '11999999999'
+});
+
+// 2. Criar conta para o responsável
+const conta = await api.createAccount({
+  personId: responsavel.data.id,
+  initialBalance: 100.00,
+  creditLimit: 50.00,
+  allowNegative: true
+});
+
+// 3. Criar cliente para o responsável
+const clienteResponsavel = await api.createCustomer({
+  personId: responsavel.data.id,
+  accountId: conta.data.id,
+  studentId: 'RESP001'
+});
+
+// 4. Criar pessoa dependente (filha)
+const dependente = await api.createPerson({
+  name: 'Maria Silva',
+  cpf: '98765432100',
+  birthDate: '2010-05-15',
+  responsibleId: responsavel.data.id  // Vincula ao responsável
+});
+
+// 5. Criar cliente para o dependente usando a MESMA conta
+const clienteDependente = await api.createCustomer({
+  personId: dependente.data.id,
+  accountId: conta.data.id,  // Mesma conta do responsável!
+  studentId: 'ALU001'
+});
+
+// 6. Agora ambos podem comprar usando a mesma conta
+// Compra do responsável
+await api.createSale({
+  customerId: clienteResponsavel.data.id,
+  paymentMethodId: accountPaymentMethodId,
+  items: [{ productId: '...', quantity: 2 }]
+});
+
+// Compra do dependente (mesmo saldo)
+await api.createSale({
+  customerId: clienteDependente.data.id,
+  paymentMethodId: accountPaymentMethodId,
+  items: [{ productId: '...', quantity: 1 }]
+});
+
+// 7. Verificar saldo compartilhado
+const saldo = await api.getAccountBalance(conta.data.id);
+// Mostra o saldo após ambas as compras
+```
+
+**Importante:**
+- Uma conta pode ter múltiplos clientes vinculados
+- Cada pessoa só pode ter uma conta própria
+- O sistema de crédito negativo permite gastos até o limite definido
+- Todas as transações são registradas com o usuário que as executou
+
+---
+
+**Versão**: 3.0.0
 **Última Atualização**: Janeiro 2025
 **Documentação gerada para**: CantinaSoft ERP Backend API

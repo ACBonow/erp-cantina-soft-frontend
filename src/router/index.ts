@@ -40,21 +40,30 @@ const routes: RouteRecordRaw[] = [
       roles: ['admin', 'manager'],
     },
   },
-  // TODO: Descomentar quando as páginas forem criadas
-  // {
-  //   path: '/customers',
-  //   name: 'customers',
-  //   component: () => import('@/presentation/pages/customers/CustomersPage.vue'),
-  //   meta: {
-  //     title: 'Clientes',
-  //     requiresAuth: true,
-  //     roles: ['admin', 'manager'],
-  //   },
-  // },
+  {
+    path: '/categories',
+    name: 'categories',
+    component: () => import('@/presentation/pages/CategoriesPage.vue'),
+    meta: {
+      title: 'Categorias',
+      requiresAuth: true,
+      roles: ['admin', 'manager'],
+    },
+  },
+  {
+    path: '/pdv',
+    name: 'pdv',
+    component: () => import('@/presentation/pages/PDVPage.vue'),
+    meta: {
+      title: 'Ponto de Venda',
+      requiresAuth: true,
+    },
+  },
+  // TODO: Implementar as páginas abaixo
   // {
   //   path: '/products',
   //   name: 'products',
-  //   component: () => import('@/presentation/pages/products/ProductsPage.vue'),
+  //   component: () => import('@/presentation/pages/ProductsPage.vue'),
   //   meta: {
   //     title: 'Produtos',
   //     requiresAuth: true,
@@ -64,7 +73,7 @@ const routes: RouteRecordRaw[] = [
   // {
   //   path: '/sales',
   //   name: 'sales',
-  //   component: () => import('@/presentation/pages/sales/SalesPage.vue'),
+  //   component: () => import('@/presentation/pages/SalesPage.vue'),
   //   meta: {
   //     title: 'Vendas',
   //     requiresAuth: true,
@@ -74,19 +83,19 @@ const routes: RouteRecordRaw[] = [
   // {
   //   path: '/inventory',
   //   name: 'inventory',
-  //   component: () => import('@/presentation/pages/inventory/InventoryPage.vue'),
+  //   component: () => import('@/presentation/pages/InventoryPage.vue'),
   //   meta: {
-  //     title: 'Inventário',
+  //     title: 'Estoque',
   //     requiresAuth: true,
   //     roles: ['admin', 'manager'],
   //   },
   // },
   // {
-  //   path: '/reports',
-  //   name: 'reports',
-  //   component: () => import('@/presentation/pages/reports/ReportsPage.vue'),
+  //   path: '/accounts',
+  //   name: 'accounts',
+  //   component: () => import('@/presentation/pages/AccountsPage.vue'),
   //   meta: {
-  //     title: 'Relatórios',
+  //     title: 'Contas',
   //     requiresAuth: true,
   //     roles: ['admin', 'manager'],
   //   },

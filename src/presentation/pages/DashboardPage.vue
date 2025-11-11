@@ -90,28 +90,28 @@
           <v-card-title>{{ t('dashboard.quickActions') }}</v-card-title>
           <v-card-text>
             <v-row>
+              <v-col cols="12" sm="6" md="3">
+                <v-btn block color="primary" size="large" to="/pdv">
+                  <v-icon start>mdi-cash-register</v-icon>
+                  Abrir PDV
+                </v-btn>
+              </v-col>
+              <v-col v-if="authStore.canManageProducts" cols="12" sm="6" md="3">
+                <v-btn block color="secondary" size="large" to="/categories">
+                  <v-icon start>mdi-tag-multiple</v-icon>
+                  Categorias
+                </v-btn>
+              </v-col>
+              <v-col v-if="authStore.canManageProducts" cols="12" sm="6" md="3">
+                <v-btn block color="success" size="large" to="/people">
+                  <v-icon start>mdi-account-group</v-icon>
+                  Pessoas
+                </v-btn>
+              </v-col>
               <v-col v-if="authStore.canManageSales" cols="12" sm="6" md="3">
-                <v-btn block color="primary" size="large" to="/sales/new">
-                  <v-icon start>mdi-cart-plus</v-icon>
-                  {{ t('sale.new') }}
-                </v-btn>
-              </v-col>
-              <v-col v-if="authStore.canManageProducts" cols="12" sm="6" md="3">
-                <v-btn block color="secondary" size="large" to="/customers">
-                  <v-icon start>mdi-account-plus</v-icon>
-                  {{ t('customer.new') }}
-                </v-btn>
-              </v-col>
-              <v-col v-if="authStore.canManageProducts" cols="12" sm="6" md="3">
-                <v-btn block color="success" size="large" to="/products">
-                  <v-icon start>mdi-package-variant</v-icon>
-                  {{ t('product.new') }}
-                </v-btn>
-              </v-col>
-              <v-col v-if="authStore.canViewReports" cols="12" sm="6" md="3">
-                <v-btn block color="info" size="large" to="/reports">
-                  <v-icon start>mdi-chart-bar</v-icon>
-                  {{ t('report.title') }}
+                <v-btn block color="info" size="large" to="/sales">
+                  <v-icon start>mdi-cart</v-icon>
+                  Vendas
                 </v-btn>
               </v-col>
             </v-row>

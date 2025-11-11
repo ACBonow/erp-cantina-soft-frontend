@@ -35,8 +35,7 @@ export class SaleRepository implements ISaleRepository {
   }
 
   async create(data: CreateSaleDTO): Promise<Sale> {
-    const response = await httpClient.post<{ data: Sale }>('/sales', data)
-    return response.data
+    return httpClient.post<Sale>('/sales', data)
   }
 
   async cancel(id: string): Promise<Sale> {

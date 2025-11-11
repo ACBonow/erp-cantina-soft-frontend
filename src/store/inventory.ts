@@ -68,10 +68,32 @@ export const useInventoryStore = defineStore('inventory', () => {
     loading.value = true
     error.value = null
     try {
-      const response = await inventoryRepository.getLowStockItems()
-      lowStockItems.value = response.items
+      lowStockItems.value = await inventoryRepository.getLowStockItems()
     } catch (err: any) {
       error.value = err.response?.data?.message || 'Erro ao buscar itens com estoque baixo'
+      throw err
+    } finally {
+      loading.value = false
+    }
+  }
+
+  async function addStock(data: InventoryMovementDTO) {
+    loading.value = true
+    error.value = null
+    try {
+      const inventory = await inventoryRepository.addStock(data)
+      const index = inventoryItems.value.findIndex((i) => i.productId === data.productId)
+      if (index !== -1) {
+        inventoryItems.value[index] = inventory
+      } else {
+        inventoryItems.value.unshift(inventory)
+      }
+      if (currentInventory.value?.productId === data.productId) {
+        currentInventory.value = inventory
+      }
+      return inventory
+    } catch (err: any) {
+      error.value = err.response?.data?.message || 'Erro ao adicionar estoque'
       throw err
     } finally {
       loading.value = false
@@ -222,6 +244,7 @@ export const useInventoryStore = defineStore('inventory', () => {
     fetchInventoryReport,
     createInventory,
     updateInventory,
+    addStock,
     restockInventory,
     adjustInventory,
     registerLoss,

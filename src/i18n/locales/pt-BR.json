@@ -33,7 +33,9 @@
     "inactive": "Inativo",
     "status": "Status",
     "createdAt": "Criado em",
-    "updatedAt": "Atualizado em"
+    "updatedAt": "Atualizado em",
+    "all": "Todos",
+    "error": "Ocorreu um erro"
   },
   "auth": {
     "login": "Entrar",
@@ -55,6 +57,7 @@
   "nav": {
     "home": "Início",
     "dashboard": "Dashboard",
+    "pdv": "PDV",
     "people": "Pessoas",
     "customers": "Clientes",
     "products": "Produtos",
@@ -138,18 +141,37 @@
     "deleteSuccess": "Produto deletado com sucesso!",
     "deleteConfirm": "Tem certeza que deseja deletar este produto?"
   },
-  "category": {
+  "categories": {
     "title": "Categorias",
-    "new": "Nova Categoria",
-    "edit": "Editar Categoria",
-    "delete": "Deletar Categoria",
+    "subtitle": "Gerencie as categorias de produtos",
     "list": "Lista de Categorias",
-    "name": "Nome",
-    "description": "Descrição",
-    "createSuccess": "Categoria criada com sucesso!",
-    "updateSuccess": "Categoria atualizada com sucesso!",
-    "deleteSuccess": "Categoria deletada com sucesso!",
-    "deleteConfirm": "Tem certeza que deseja deletar esta categoria?"
+    "fields": {
+      "name": "Nome",
+      "description": "Descrição",
+      "active": "Ativo"
+    },
+    "actions": {
+      "create": "Nova Categoria",
+      "edit": "Editar",
+      "delete": "Deletar"
+    },
+    "dialog": {
+      "create": "Criar Nova Categoria",
+      "edit": "Editar Categoria"
+    },
+    "delete": {
+      "title": "Confirmar Exclusão",
+      "message": "Tem certeza que deseja deletar esta categoria? Esta ação não pode ser desfeita."
+    },
+    "messages": {
+      "created": "Categoria criada com sucesso!",
+      "updated": "Categoria atualizada com sucesso!",
+      "deleted": "Categoria deletada com sucesso!"
+    },
+    "emptyState": {
+      "title": "Nenhuma categoria encontrada",
+      "text": "Comece criando sua primeira categoria de produtos"
+    }
   },
   "sale": {
     "title": "Vendas",

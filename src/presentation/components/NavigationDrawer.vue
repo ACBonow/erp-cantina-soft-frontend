@@ -58,6 +58,11 @@ const menuItems = computed(() => {
       icon: 'mdi-view-dashboard',
       title: 'nav.dashboard',
     },
+    {
+      to: '/pdv',
+      icon: 'mdi-cash-register',
+      title: 'nav.pdv',
+    },
   ]
 
   if (authStore.canManageProducts) {
@@ -68,13 +73,8 @@ const menuItems = computed(() => {
         title: 'nav.people',
       },
       {
-        to: '/products',
-        icon: 'mdi-package-variant',
-        title: 'nav.products',
-      },
-      {
         to: '/categories',
-        icon: 'mdi-shape',
+        icon: 'mdi-tag-multiple',
         title: 'nav.categories',
       },
     )

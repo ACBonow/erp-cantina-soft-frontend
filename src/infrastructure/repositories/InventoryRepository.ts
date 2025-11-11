@@ -18,7 +18,7 @@ export class InventoryRepository implements IInventoryRepository {
     if (params?.limit) queryParams.append('limit', params.limit.toString())
 
     const response = await httpClient.get<{
-      items: Inventory[]
+      inventory: Inventory[]
       total: number
       page: number
       limit: number
@@ -26,7 +26,7 @@ export class InventoryRepository implements IInventoryRepository {
     }>(`/inventory?${queryParams.toString()}`)
 
     return {
-      data: response.items,
+      data: response.inventory,
       total: response.total,
       page: response.page,
       limit: response.limit,
@@ -38,8 +38,9 @@ export class InventoryRepository implements IInventoryRepository {
     return httpClient.get<Inventory>(`/inventory/product/${productId}`)
   }
 
-  async getLowStockItems(): Promise<{ items: LowStockItem[] }> {
-    return httpClient.get<{ items: LowStockItem[] }>('/inventory/low-stock')
+  async getLowStockItems(): Promise<LowStockItem[]> {
+    const response = await httpClient.get<{ inventory: LowStockItem[] }>('/inventory/low-stock')
+    return response.inventory || []
   }
 
   async getReport(): Promise<InventoryReport> {
@@ -52,6 +53,10 @@ export class InventoryRepository implements IInventoryRepository {
 
   async update(id: string, data: UpdateInventoryDTO): Promise<Inventory> {
     return httpClient.put<Inventory>(`/inventory/${id}`, data)
+  }
+
+  async addStock(data: InventoryMovementDTO): Promise<Inventory> {
+    return httpClient.post<Inventory>('/inventory/add', data)
   }
 
   async restock(data: InventoryMovementDTO): Promise<Inventory> {

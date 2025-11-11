@@ -60,28 +60,33 @@ export class HttpClient {
   }
 
   async get<T>(url: string, config?: AxiosRequestConfig): Promise<T> {
-    const response: AxiosResponse<T> = await this.client.get(url, config)
-    return response.data
+    const response = await this.client.get(url, config)
+    // Backend returns { status: 'success', data: {...} }
+    return response.data.data || response.data
   }
 
   async post<T>(url: string, data?: any, config?: AxiosRequestConfig): Promise<T> {
-    const response: AxiosResponse<T> = await this.client.post(url, data, config)
-    return response.data
+    const response = await this.client.post(url, data, config)
+    // Backend returns { status: 'success', data: {...} }
+    return response.data.data || response.data
   }
 
   async put<T>(url: string, data?: any, config?: AxiosRequestConfig): Promise<T> {
-    const response: AxiosResponse<T> = await this.client.put(url, data, config)
-    return response.data
+    const response = await this.client.put(url, data, config)
+    // Backend returns { status: 'success', data: {...} }
+    return response.data.data || response.data
   }
 
   async delete<T>(url: string, config?: AxiosRequestConfig): Promise<T> {
-    const response: AxiosResponse<T> = await this.client.delete(url, config)
-    return response.data
+    const response = await this.client.delete(url, config)
+    // Backend returns { status: 'success', data: {...} }
+    return response.data.data || response.data
   }
 
   async patch<T>(url: string, data?: any, config?: AxiosRequestConfig): Promise<T> {
-    const response: AxiosResponse<T> = await this.client.patch(url, data, config)
-    return response.data
+    const response = await this.client.patch(url, data, config)
+    // Backend returns { status: 'success', data: {...} }
+    return response.data.data || response.data
   }
 }
 
