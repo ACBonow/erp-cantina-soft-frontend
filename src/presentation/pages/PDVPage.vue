@@ -248,15 +248,17 @@ const filteredProducts = computed(() => {
   )
 })
 
-const customers = computed(() => customerStore.customers)
+const customers = computed(() => customerStore.customers || [])
 
 const availablePaymentMethods = computed(() => {
+  const methods = paymentMethodStore.paymentMethods || []
+
   // If customer is selected, show all methods
   // If no customer, hide "account" method
   if (selectedCustomerId.value) {
-    return paymentMethodStore.paymentMethods
+    return methods
   }
-  return paymentMethodStore.paymentMethods.filter((pm) => !pm.requiresAccount)
+  return methods.filter((pm) => !pm.requiresAccount)
 })
 
 const total = computed(() => {
