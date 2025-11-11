@@ -161,6 +161,15 @@
           </span>
         </template>
 
+        <!-- Stock Alert -->
+        <template #item.stockAlert="{ item }">
+          <stock-badge
+            :current-stock="item.quantity"
+            :min-stock-alert="item.minStockAlert"
+            :max-stock-alert="item.maxStockAlert"
+          />
+        </template>
+
         <!-- Status -->
         <template #item.status="{ item }">
           <v-chip
@@ -332,6 +341,7 @@ import { useProductStore } from '@/store/product'
 import { useNotification } from '@/composables/useNotification'
 import type { Inventory, InventoryMovement } from '@/domain/entities/Inventory'
 import { formatDate } from '@/shared/utils/formatters'
+import StockBadge from '@/presentation/components/StockBadge.vue'
 
 const inventoryStore = useInventoryStore()
 const productStore = useProductStore()
@@ -372,11 +382,34 @@ const productOptions = computed(() => {
   }))
 })
 
+// Map products with their alert settings
+const productsMap = computed(() => {
+  const map = new Map()
+  productStore.products.forEach(product => {
+    map.set(product.id, product)
+  })
+  return map
+})
+
+// Enrich inventory items with product alert data
+const enrichedInventoryItems = computed(() => {
+  return (inventoryStore.inventoryItems || []).map(item => {
+    const product = productsMap.value.get(item.productId)
+    return {
+      ...item,
+      minStockAlert: product?.minStockAlert || 10,
+      maxStockAlert: product?.maxStockAlert || 100,
+      reorderQuantity: product?.reorderQuantity || 50,
+    }
+  })
+})
+
 // Headers
 const headers = [
   { title: 'Produto', key: 'productName', sortable: true },
   { title: 'Quantidade', key: 'quantity', sortable: true },
   { title: 'Min / Max', key: 'minMax', sortable: false },
+  { title: 'Alerta Estoque', key: 'stockAlert', sortable: false },
   { title: 'Status', key: 'status', sortable: true },
   { title: 'Atualizado em', key: 'updatedAt', sortable: true },
   { title: 'Ações', key: 'actions', sortable: false, align: 'center' as const },
@@ -386,7 +419,7 @@ const headers = [
 const inventoryItems = computed(() => inventoryStore.inventoryItems || [])
 
 const filteredInventory = computed(() => {
-  let items = inventoryItems.value
+  let items = enrichedInventoryItems.value
 
   // Filter by search
   if (search.value) {

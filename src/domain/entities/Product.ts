@@ -5,10 +5,22 @@ export interface Product {
   price: number
   cost: number
   categoryId: string
+  categoryName?: string
+  barcode?: string
   active: boolean
+  // Stock alert fields
+  minStockAlert?: number
+  maxStockAlert?: number
+  reorderQuantity?: number
   createdAt: string
   updatedAt: string
   category?: Category
+}
+
+export interface ProductWithStock extends Product {
+  currentStock?: number
+  stockStatus?: 'low' | 'ok' | 'high' | 'out'
+  needsReorder?: boolean
 }
 
 export interface Category {
@@ -26,6 +38,10 @@ export interface CreateProductDTO {
   price: number
   cost: number
   categoryId: string
+  barcode?: string
+  minStockAlert?: number
+  maxStockAlert?: number
+  reorderQuantity?: number
 }
 
 export interface UpdateProductDTO {
@@ -34,7 +50,11 @@ export interface UpdateProductDTO {
   price?: number
   cost?: number
   categoryId?: string
+  barcode?: string
   active?: boolean
+  minStockAlert?: number
+  maxStockAlert?: number
+  reorderQuantity?: number
 }
 
 export interface CreateCategoryDTO {

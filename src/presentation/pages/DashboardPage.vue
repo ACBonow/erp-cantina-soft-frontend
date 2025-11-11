@@ -47,21 +47,7 @@
       </v-col>
 
       <v-col cols="12" sm="6" md="3">
-        <v-card>
-          <v-card-text>
-            <div class="d-flex align-center">
-              <v-avatar color="warning" size="56">
-                <v-icon size="32">mdi-alert</v-icon>
-              </v-avatar>
-              <div class="ml-4">
-                <div class="text-h6">{{ lowStockCount }}</div>
-                <div class="text-caption text-medium-emphasis">
-                  {{ t('dashboard.lowStockItems') }}
-                </div>
-              </div>
-            </div>
-          </v-card-text>
-        </v-card>
+        <low-stock-widget />
       </v-col>
 
       <v-col cols="12" sm="6" md="3">
@@ -185,6 +171,7 @@ import { useCustomerStore } from '@/store/customer'
 import { useInventoryStore } from '@/store/inventory'
 import { formatCurrency, formatDateTime } from '@/shared/utils/formatters'
 import { SALE_STATUS_COLORS } from '@/shared/constants'
+import LowStockWidget from '@/presentation/components/LowStockWidget.vue'
 
 const { t } = useI18n()
 const authStore = useAuthStore()

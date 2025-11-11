@@ -1,5 +1,6 @@
 import type {
   Product,
+  ProductWithStock,
   CreateProductDTO,
   UpdateProductDTO,
   Category,
@@ -54,6 +55,13 @@ export class ProductRepository implements IProductRepository {
 
   async delete(id: string): Promise<void> {
     await httpClient.delete(`/products/${id}`)
+  }
+
+  async getProductsNeedingReorder(): Promise<ProductWithStock[]> {
+    const response = await httpClient.get<{ products: ProductWithStock[] }>(
+      '/products/reorder/needed',
+    )
+    return response.products || []
   }
 }
 

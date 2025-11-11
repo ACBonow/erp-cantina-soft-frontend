@@ -208,6 +208,63 @@
               class="mb-4"
             />
 
+            <!-- Stock Alert Section -->
+            <v-card class="mb-4" elevation="0" variant="outlined">
+              <v-card-title class="text-subtitle-1 pa-4">
+                <v-icon start>mdi-package-variant-closed</v-icon>
+                Controle de Estoque
+              </v-card-title>
+              <v-card-text class="pa-4">
+                <v-row>
+                  <v-col cols="12" md="4">
+                    <v-text-field
+                      v-model.number="formData.minStockAlert"
+                      label="Estoque Mínimo"
+                      hint="Alertar quando estoque chegar neste valor"
+                      persistent-hint
+                      variant="outlined"
+                      density="comfortable"
+                      type="number"
+                      min="0"
+                    />
+                  </v-col>
+                  <v-col cols="12" md="4">
+                    <v-text-field
+                      v-model.number="formData.maxStockAlert"
+                      label="Estoque Máximo"
+                      hint="Quantidade máxima recomendada"
+                      persistent-hint
+                      variant="outlined"
+                      density="comfortable"
+                      type="number"
+                      min="0"
+                    />
+                  </v-col>
+                  <v-col cols="12" md="4">
+                    <v-text-field
+                      v-model.number="formData.reorderQuantity"
+                      label="Qtd. Reposição"
+                      hint="Quantidade sugerida para pedido"
+                      persistent-hint
+                      variant="outlined"
+                      density="comfortable"
+                      type="number"
+                      min="1"
+                    />
+                  </v-col>
+                </v-row>
+
+                <v-alert
+                  v-if="formData.minStockAlert && formData.maxStockAlert && formData.minStockAlert > formData.maxStockAlert"
+                  type="warning"
+                  variant="tonal"
+                  class="mt-4"
+                >
+                  O estoque mínimo não pode ser maior que o máximo
+                </v-alert>
+              </v-card-text>
+            </v-card>
+
             <v-switch
               v-model="formData.active"
               label="Produto ativo"
@@ -279,8 +336,12 @@ const formData = ref<CreateProductDTO & { active: boolean }>({
   name: '',
   description: '',
   price: 0,
+  cost: 0,
   categoryId: '',
   barcode: '',
+  minStockAlert: 10,
+  maxStockAlert: 100,
+  reorderQuantity: 50,
   active: true,
 })
 
@@ -351,8 +412,12 @@ function openCreateDialog() {
     name: '',
     description: '',
     price: 0,
+    cost: 0,
     categoryId: '',
     barcode: '',
+    minStockAlert: 10,
+    maxStockAlert: 100,
+    reorderQuantity: 50,
     active: true,
   }
   dialog.value = true
@@ -365,8 +430,12 @@ function openEditDialog(product: Product) {
     name: product.name,
     description: product.description || '',
     price: product.price,
+    cost: product.cost || 0,
     categoryId: product.categoryId,
     barcode: product.barcode || '',
+    minStockAlert: product.minStockAlert || 10,
+    maxStockAlert: product.maxStockAlert || 100,
+    reorderQuantity: product.reorderQuantity || 50,
     active: product.active,
   }
   dialog.value = true
