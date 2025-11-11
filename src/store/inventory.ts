@@ -28,13 +28,27 @@ export const useInventoryStore = defineStore('inventory', () => {
     totalPages: 0,
   })
 
+  // Helper function to calculate status
+  function calculateStatus(item: Inventory): 'low' | 'sufficient' | 'excess' {
+    if (item.quantity <= item.minQuantity) {
+      return 'low'
+    } else if (item.quantity >= item.maxQuantity) {
+      return 'excess'
+    }
+    return 'sufficient'
+  }
+
   // Actions
   async function fetchInventory(params?: PaginationParams) {
     loading.value = true
     error.value = null
     try {
       const response = await inventoryRepository.getAll(params)
-      inventoryItems.value = response.data
+      // Add status to each item
+      inventoryItems.value = response.data.map(item => ({
+        ...item,
+        status: calculateStatus(item)
+      }))
       pagination.value = {
         page: response.page,
         limit: response.limit,
@@ -77,21 +91,25 @@ export const useInventoryStore = defineStore('inventory', () => {
     }
   }
 
-  async function addStock(data: InventoryMovementDTO) {
+  async function addStock(data: any) {
     loading.value = true
     error.value = null
     try {
       const inventory = await inventoryRepository.addStock(data)
+      const inventoryWithStatus = {
+        ...inventory,
+        status: calculateStatus(inventory)
+      }
       const index = inventoryItems.value.findIndex((i) => i.productId === data.productId)
       if (index !== -1) {
-        inventoryItems.value[index] = inventory
+        inventoryItems.value[index] = inventoryWithStatus
       } else {
-        inventoryItems.value.unshift(inventory)
+        inventoryItems.value.unshift(inventoryWithStatus)
       }
       if (currentInventory.value?.productId === data.productId) {
-        currentInventory.value = inventory
+        currentInventory.value = inventoryWithStatus
       }
-      return inventory
+      return inventoryWithStatus
     } catch (err: any) {
       error.value = err.response?.data?.message || 'Erro ao adicionar estoque'
       throw err

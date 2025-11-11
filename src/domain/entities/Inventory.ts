@@ -6,6 +6,7 @@ export interface Inventory {
   minQuantity: number
   maxQuantity: number
   lastRestockDate?: string
+  status?: 'low' | 'sufficient' | 'excess'
   createdAt: string
   updatedAt: string
 }

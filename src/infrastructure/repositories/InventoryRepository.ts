@@ -18,7 +18,7 @@ export class InventoryRepository implements IInventoryRepository {
     if (params?.limit) queryParams.append('limit', params.limit.toString())
 
     const response = await httpClient.get<{
-      inventory: Inventory[]
+      items: Inventory[]
       total: number
       page: number
       limit: number
@@ -26,11 +26,11 @@ export class InventoryRepository implements IInventoryRepository {
     }>(`/inventory?${queryParams.toString()}`)
 
     return {
-      data: response.inventory,
-      total: response.total,
-      page: response.page,
-      limit: response.limit,
-      totalPages: response.totalPages,
+      data: response.items || [],
+      total: response.total || 0,
+      page: response.page || 1,
+      limit: response.limit || 10,
+      totalPages: response.totalPages || 1,
     }
   }
 
