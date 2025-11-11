@@ -90,28 +90,22 @@
           <v-card-title>{{ t('dashboard.quickActions') }}</v-card-title>
           <v-card-text>
             <v-row>
-              <v-col cols="12" sm="6" md="3">
+              <v-col cols="12" sm="6" md="4">
                 <v-btn block color="primary" size="large" to="/pdv">
                   <v-icon start>mdi-cash-register</v-icon>
                   Abrir PDV
                 </v-btn>
               </v-col>
-              <v-col v-if="authStore.canManageProducts" cols="12" sm="6" md="3">
+              <v-col v-if="authStore.canManageProducts" cols="12" sm="6" md="4">
                 <v-btn block color="secondary" size="large" to="/categories">
                   <v-icon start>mdi-tag-multiple</v-icon>
                   Categorias
                 </v-btn>
               </v-col>
-              <v-col v-if="authStore.canManageProducts" cols="12" sm="6" md="3">
+              <v-col v-if="authStore.canManageProducts" cols="12" sm="6" md="4">
                 <v-btn block color="success" size="large" to="/people">
                   <v-icon start>mdi-account-group</v-icon>
                   Pessoas
-                </v-btn>
-              </v-col>
-              <v-col v-if="authStore.canManageSales" cols="12" sm="6" md="3">
-                <v-btn block color="info" size="large" to="/sales">
-                  <v-icon start>mdi-cart</v-icon>
-                  Vendas
                 </v-btn>
               </v-col>
             </v-row>

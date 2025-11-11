@@ -80,21 +80,22 @@ const menuItems = computed(() => {
     )
   }
 
-  if (authStore.canManageSales) {
-    items.push({
-      to: '/sales',
-      icon: 'mdi-cart',
-      title: 'nav.sales',
-    })
-  }
+  // TODO: Descomentar quando as páginas forem implementadas
+  // if (authStore.canManageSales) {
+  //   items.push({
+  //     to: '/sales',
+  //     icon: 'mdi-cart',
+  //     title: 'nav.sales',
+  //   })
+  // }
 
-  if (authStore.canManageInventory) {
-    items.push({
-      to: '/inventory',
-      icon: 'mdi-warehouse',
-      title: 'nav.inventory',
-    })
-  }
+  // if (authStore.canManageInventory) {
+  //   items.push({
+  //     to: '/inventory',
+  //     icon: 'mdi-warehouse',
+  //     title: 'nav.inventory',
+  //   })
+  // }
 
   return items
 })
