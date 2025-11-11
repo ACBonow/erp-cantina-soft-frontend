@@ -4,7 +4,9 @@ import { httpClient } from '../http/httpClient'
 
 export class PaymentMethodRepository implements IPaymentMethodRepository {
   async getAll(): Promise<PaymentMethod[]> {
-    return httpClient.get<PaymentMethod[]>('/payment-methods')
+    // Backend returns { paymentMethods: [...] }
+    const response = await httpClient.get<{ paymentMethods: PaymentMethod[] }>('/payment-methods')
+    return response.paymentMethods
   }
 
   async getById(id: string): Promise<PaymentMethod> {
