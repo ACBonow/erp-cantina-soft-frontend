@@ -90,19 +90,25 @@
           <v-card-title>{{ t('dashboard.quickActions') }}</v-card-title>
           <v-card-text>
             <v-row>
-              <v-col cols="12" sm="6" md="4">
+              <v-col cols="12" sm="6" md="3">
                 <v-btn block color="primary" size="large" to="/pdv">
                   <v-icon start>mdi-cash-register</v-icon>
                   Abrir PDV
                 </v-btn>
               </v-col>
-              <v-col v-if="authStore.canManageProducts" cols="12" sm="6" md="4">
-                <v-btn block color="secondary" size="large" to="/categories">
-                  <v-icon start>mdi-tag-multiple</v-icon>
-                  Categorias
+              <v-col v-if="authStore.canManageProducts" cols="12" sm="6" md="3">
+                <v-btn block color="secondary" size="large" to="/products">
+                  <v-icon start>mdi-package-variant</v-icon>
+                  Produtos
                 </v-btn>
               </v-col>
-              <v-col v-if="authStore.canManageProducts" cols="12" sm="6" md="4">
+              <v-col v-if="authStore.canManageInventory" cols="12" sm="6" md="3">
+                <v-btn block color="warning" size="large" to="/inventory">
+                  <v-icon start>mdi-warehouse</v-icon>
+                  Estoque
+                </v-btn>
+              </v-col>
+              <v-col v-if="authStore.canManageProducts" cols="12" sm="6" md="3">
                 <v-btn block color="success" size="large" to="/people">
                   <v-icon start>mdi-account-group</v-icon>
                   Pessoas

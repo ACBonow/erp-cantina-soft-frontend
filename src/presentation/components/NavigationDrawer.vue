@@ -73,11 +73,24 @@ const menuItems = computed(() => {
         title: 'nav.people',
       },
       {
+        to: '/products',
+        icon: 'mdi-package-variant',
+        title: 'nav.products',
+      },
+      {
         to: '/categories',
         icon: 'mdi-tag-multiple',
         title: 'nav.categories',
       },
     )
+  }
+
+  if (authStore.canManageInventory) {
+    items.push({
+      to: '/inventory',
+      icon: 'mdi-warehouse',
+      title: 'nav.inventory',
+    })
   }
 
   // TODO: Descomentar quando as páginas forem implementadas
@@ -86,14 +99,6 @@ const menuItems = computed(() => {
   //     to: '/sales',
   //     icon: 'mdi-cart',
   //     title: 'nav.sales',
-  //   })
-  // }
-
-  // if (authStore.canManageInventory) {
-  //   items.push({
-  //     to: '/inventory',
-  //     icon: 'mdi-warehouse',
-  //     title: 'nav.inventory',
   //   })
   // }
 

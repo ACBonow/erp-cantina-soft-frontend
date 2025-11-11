@@ -59,33 +59,33 @@ const routes: RouteRecordRaw[] = [
       requiresAuth: true,
     },
   },
+  {
+    path: '/products',
+    name: 'products',
+    component: () => import('@/presentation/pages/ProductsPage.vue'),
+    meta: {
+      title: 'Produtos',
+      requiresAuth: true,
+      roles: ['admin', 'manager'],
+    },
+  },
+  {
+    path: '/inventory',
+    name: 'inventory',
+    component: () => import('@/presentation/pages/InventoryPage.vue'),
+    meta: {
+      title: 'Estoque',
+      requiresAuth: true,
+      roles: ['admin', 'manager'],
+    },
+  },
   // TODO: Implementar as páginas abaixo
-  // {
-  //   path: '/products',
-  //   name: 'products',
-  //   component: () => import('@/presentation/pages/ProductsPage.vue'),
-  //   meta: {
-  //     title: 'Produtos',
-  //     requiresAuth: true,
-  //     roles: ['admin', 'manager'],
-  //   },
-  // },
   // {
   //   path: '/sales',
   //   name: 'sales',
   //   component: () => import('@/presentation/pages/SalesPage.vue'),
   //   meta: {
   //     title: 'Vendas',
-  //     requiresAuth: true,
-  //     roles: ['admin', 'manager'],
-  //   },
-  // },
-  // {
-  //   path: '/inventory',
-  //   name: 'inventory',
-  //   component: () => import('@/presentation/pages/InventoryPage.vue'),
-  //   meta: {
-  //     title: 'Estoque',
   //     requiresAuth: true,
   //     roles: ['admin', 'manager'],
   //   },
