@@ -218,25 +218,30 @@ onMounted(async () => {
     // Carregar dados do dashboard
     if (authStore.canManageSales) {
       await saleStore.fetchSales({ page: 1, limit: 10 })
-      totalSalesToday.value = saleStore.pagination.total
+      totalSalesToday.value = saleStore.pagination.total || 0
 
       // Calcular total de vendas de hoje
       const today = new Date().toISOString().split('T')[0]
-      const todaySalesData = saleStore.sales.filter((s) =>
-        s.createdAt.startsWith(today),
+      const todaySalesData = (saleStore.sales || []).filter((s) =>
+        s.createdAt?.startsWith(today),
       )
-      todaySales.value = todaySalesData.reduce((acc, s) => acc + s.totalAmount, 0)
+      todaySales.value = todaySalesData.reduce((acc, s) => {
+        const amount = Number(s.totalAmount) || 0
+        return acc + amount
+      }, 0)
     }
 
     if (authStore.canManageProducts) {
       await customerStore.fetchCustomers({ page: 1, limit: 1 })
-      totalCustomers.value = customerStore.pagination.total
+      totalCustomers.value = customerStore.pagination.total || 0
     }
 
     if (authStore.canManageInventory) {
       await inventoryStore.fetchLowStockItems()
-      lowStockCount.value = inventoryStore.lowStockItems.length
+      lowStockCount.value = inventoryStore.lowStockItems.length || 0
     }
+  } catch (error) {
+    console.error('Erro ao carregar dados do dashboard:', error)
   } finally {
     loading.value = false
   }
