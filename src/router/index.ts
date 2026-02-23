@@ -60,6 +60,16 @@ const routes: RouteRecordRaw[] = [
     },
   },
   {
+    path: '/customers',
+    name: 'customers',
+    component: () => import('@/presentation/pages/CustomersPage.vue'),
+    meta: {
+      title: 'Clientes',
+      requiresAuth: true,
+      roles: ['admin', 'manager'],
+    },
+  },
+  {
     path: '/products',
     name: 'products',
     component: () => import('@/presentation/pages/ProductsPage.vue'),

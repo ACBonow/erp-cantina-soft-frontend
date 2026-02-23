@@ -55,6 +55,7 @@
   "nav": {
     "home": "Home",
     "dashboard": "Dashboard",
+    "pdv": "POS",
     "people": "People",
     "customers": "Customers",
     "products": "Products",

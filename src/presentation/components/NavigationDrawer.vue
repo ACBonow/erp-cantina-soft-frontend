@@ -68,6 +68,11 @@ const menuItems = computed(() => {
   if (authStore.canManageProducts) {
     items.push(
       {
+        to: '/customers',
+        icon: 'mdi-account-group',
+        title: 'nav.customers',
+      },
+      {
         to: '/people',
         icon: 'mdi-account-multiple',
         title: 'nav.people',
