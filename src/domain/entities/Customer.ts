@@ -1,10 +1,10 @@
 export interface Customer {
   id: string
   name: string
-  email: string
-  cpf: string
-  phone: string
-  studentId: string
+  email?: string
+  cpf?: string
+  phone?: string
+  studentId?: string
   balance: number
   responsibleId?: string
   active: boolean
@@ -14,10 +14,10 @@ export interface Customer {
 
 export interface CreateCustomerDTO {
   name: string
-  email: string
-  cpf: string
-  phone: string
-  studentId: string
+  email?: string
+  cpf?: string
+  phone?: string
+  studentId?: string
   responsibleId?: string
   initialBalance?: number
 }

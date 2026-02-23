@@ -284,7 +284,6 @@
                   v-model="form.cpf"
                   :label="t('customer.cpf')"
                   variant="outlined"
-                  :rules="isEditing ? [] : [rules.required]"
                   :disabled="isEditing"
                 />
               </v-col>
