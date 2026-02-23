@@ -128,10 +128,8 @@
 
             <v-text-field
               v-model="formData.cpf"
-              :label="`${t('person.cpf')} *`"
-              :rules="[rules.required, rules.cpf]"
-              :disabled="isEditing"
-              required
+              :label="isEditing ? t('person.cpf') : `${t('person.cpf')} *`"
+              :rules="isEditing ? [rules.cpf] : [rules.required, rules.cpf]"
               hint="Ex: 123.456.789-01 ou 12345678901"
             />
 
@@ -372,6 +370,7 @@ async function savePerson() {
     if (isEditing.value && selectedPerson.value) {
       await peopleStore.updatePerson(selectedPerson.value.id, {
         name: formData.value.name,
+        cpf: formData.value.cpf || undefined,
         email: formData.value.email || undefined,
         phone: formData.value.phone || undefined,
         birthDate: formData.value.birthDate || undefined,

@@ -163,6 +163,29 @@
               />
             </v-card-text>
 
+            <!-- Balance info (account payment) -->
+            <v-card-text v-if="isAccountPayment && selectedCustomer" class="pa-3 pt-0">
+              <v-alert
+                :type="hasInsufficientBalance ? 'error' : 'success'"
+                variant="tonal"
+                density="compact"
+              >
+                <span class="text-caption">
+                  Saldo disponível:
+                  <strong>{{ formatCurrency(selectedCustomer.balance ?? 0) }}</strong>
+                </span>
+                <span v-if="hasInsufficientBalance" class="text-caption d-block">
+                  Faltam
+                  <strong>{{ formatCurrency(total - (selectedCustomer.balance ?? 0)) }}</strong>
+                </span>
+              </v-alert>
+            </v-card-text>
+            <v-card-text v-else-if="isAccountPayment && !selectedCustomer" class="pa-3 pt-0">
+              <v-alert type="warning" variant="tonal" density="compact">
+                <span class="text-caption">Selecione um cliente para usar o saldo.</span>
+              </v-alert>
+            </v-card-text>
+
             <!-- Total -->
             <v-card-text class="pa-3 pt-0 bg-grey-lighten-4">
               <div class="d-flex justify-space-between align-center">
@@ -187,7 +210,7 @@
               <v-btn
                 color="success"
                 variant="flat"
-                :disabled="cart.length === 0 || !selectedPaymentMethodId"
+                :disabled="cart.length === 0 || !selectedPaymentMethodId || hasInsufficientBalance || (isAccountPayment && !selectedCustomer)"
                 :loading="saleStore.loading"
                 class="flex-1-1"
                 @click="finalizeSale"
@@ -384,6 +407,29 @@
             />
           </v-card-text>
 
+          <!-- Balance info (account payment) — mobile -->
+          <v-card-text v-if="isAccountPayment && selectedCustomer" class="pa-3 pt-0">
+            <v-alert
+              :type="hasInsufficientBalance ? 'error' : 'success'"
+              variant="tonal"
+              density="compact"
+            >
+              <span class="text-caption">
+                Saldo disponível:
+                <strong>{{ formatCurrency(selectedCustomer.balance ?? 0) }}</strong>
+              </span>
+              <span v-if="hasInsufficientBalance" class="text-caption d-block">
+                Faltam
+                <strong>{{ formatCurrency(total - (selectedCustomer.balance ?? 0)) }}</strong>
+              </span>
+            </v-alert>
+          </v-card-text>
+          <v-card-text v-else-if="isAccountPayment && !selectedCustomer" class="pa-3 pt-0">
+            <v-alert type="warning" variant="tonal" density="compact">
+              <span class="text-caption">Selecione um cliente para usar o saldo.</span>
+            </v-alert>
+          </v-card-text>
+
           <v-card-text class="pa-3 pt-0 bg-grey-lighten-4">
             <div class="d-flex justify-space-between align-center">
               <span class="text-subtitle-1 font-weight-medium">Total:</span>
@@ -407,7 +453,7 @@
               color="success"
               variant="flat"
               size="large"
-              :disabled="cart.length === 0 || !selectedPaymentMethodId"
+              :disabled="cart.length === 0 || !selectedPaymentMethodId || hasInsufficientBalance || (isAccountPayment && !selectedCustomer)"
               :loading="saleStore.loading"
               class="flex-1-1"
               @click="finalizeSale"
@@ -475,6 +521,25 @@ const total = computed(() =>
 )
 
 const totalItems = computed(() => cart.value.reduce((sum, item) => sum + item.quantity, 0))
+
+const selectedCustomer = computed(() =>
+  customers.value.find((c) => c.id === selectedCustomerId.value) ?? null,
+)
+
+const isAccountPayment = computed(() => {
+  if (!selectedPaymentMethodId.value) return false
+  const method = paymentMethodStore.paymentMethods.find(
+    (m) => m.id === selectedPaymentMethodId.value,
+  )
+  return method?.requiresAccount ?? false
+})
+
+const hasInsufficientBalance = computed(
+  () =>
+    isAccountPayment.value &&
+    selectedCustomer.value !== null &&
+    (selectedCustomer.value.balance ?? 0) < total.value,
+)
 
 // ─── Cart actions ─────────────────────────────────────────────────────────────
 function addToCart(product: Product) {
