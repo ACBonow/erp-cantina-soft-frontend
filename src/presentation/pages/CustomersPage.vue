@@ -437,8 +437,8 @@ function closeCreditDialog() {
 }
 
 async function submitAddCredit() {
-  const { valid } = await creditFormRef.value?.validate()
-  if (!valid) return
+  const result = await creditFormRef.value?.validate()
+  if (!result?.valid) return
   if (!selectedCustomer.value || !creditForm.value.amount) return
 
   try {
@@ -501,10 +501,10 @@ function openEditDialog(customer: Customer) {
   editingId.value = customer.id
   form.value = {
     name: customer.name,
-    cpf: customer.cpf,
+    cpf: customer.cpf || '',
     email: customer.email || '',
     phone: customer.phone || '',
-    studentId: customer.studentId,
+    studentId: customer.studentId || '',
     initialBalance: null,
   }
   formDialog.value = true
@@ -515,8 +515,8 @@ function closeFormDialog() {
 }
 
 async function submitForm() {
-  const { valid } = await formRef.value?.validate()
-  if (!valid) return
+  const result = await formRef.value?.validate()
+  if (!result?.valid) return
 
   try {
     if (isEditing.value && editingId.value) {

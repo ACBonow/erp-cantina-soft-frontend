@@ -296,20 +296,20 @@
         <v-divider />
 
         <v-card-text class="pa-6">
-          <v-list v-if="movements.length > 0">
+          <v-list v-if="inventoryStore.movements.length > 0">
             <v-list-item
-              v-for="(movement, index) in movements"
+              v-for="(movement, index) in inventoryStore.movements"
               :key="index"
               class="mb-2"
             >
               <template #prepend>
-                <v-icon :color="movement.type === 'in' ? 'success' : 'error'">
-                  {{ movement.type === 'in' ? 'mdi-plus-circle' : 'mdi-minus-circle' }}
+                <v-icon :color="isStockIncrease(movement) ? 'success' : 'error'">
+                  {{ isStockIncrease(movement) ? 'mdi-plus-circle' : 'mdi-minus-circle' }}
                 </v-icon>
               </template>
 
               <v-list-item-title>
-                {{ movement.type === 'in' ? 'Entrada' : 'Saída' }} de {{ movement.quantity }} unidades
+                {{ isStockIncrease(movement) ? 'Entrada' : 'Saída' }} de {{ movement.quantity }} unidades
               </v-list-item-title>
               <v-list-item-subtitle>
                 {{ movement.reason }} • {{ formatDate(movement.createdAt) }}
@@ -353,7 +353,6 @@ const movementsDialog = ref(false)
 const search = ref('')
 const statusFilter = ref('all')
 const addStockForm = ref<any>(null)
-const movements = ref<InventoryMovement[]>([])
 
 const addStockData = ref({
   productId: '',
@@ -454,7 +453,7 @@ function getQuantityColor(item: Inventory) {
   return 'success'
 }
 
-function getStatusColor(status: string) {
+function getStatusColor(status?: string) {
   switch (status) {
     case 'low': return 'error'
     case 'sufficient': return 'success'
@@ -463,13 +462,17 @@ function getStatusColor(status: string) {
   }
 }
 
-function getStatusText(status: string) {
+function getStatusText(status?: string) {
   switch (status) {
     case 'low': return 'Baixo'
     case 'sufficient': return 'OK'
     case 'excess': return 'Excesso'
-    default: return status
+    default: return status ?? ''
   }
+}
+
+function isStockIncrease(movement: InventoryMovement): boolean {
+  return movement.newQuantity > movement.previousQuantity
 }
 
 function filterLowStock() {
@@ -515,8 +518,7 @@ async function addStock() {
 
 async function viewMovements(item: Inventory) {
   try {
-    const response = await inventoryStore.fetchMovements(item.id)
-    movements.value = response.movements || []
+    await inventoryStore.fetchMovements(item.id)
     movementsDialog.value = true
   } catch (err: any) {
     showError(err.message || 'Erro ao buscar movimentações')

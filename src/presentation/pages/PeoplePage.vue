@@ -242,7 +242,6 @@ import { usePeopleStore } from '@/store/people'
 import type { Person } from '@/domain/entities/Person'
 import { isValidCPF, isValidEmail, isValidPhone } from '@/shared/utils/validators'
 import { formatCPF, formatPhone } from '@/shared/utils/formatters'
-import { getUserFriendlyError } from '@/shared/utils/errorHandler'
 
 const { t } = useI18n()
 const peopleStore = usePeopleStore()
@@ -279,7 +278,7 @@ const headers = computed(() => [
   { title: t('person.email'), key: 'email', sortable: true },
   { title: t('person.phone'), key: 'phone', sortable: false },
   { title: t('common.status'), key: 'active', sortable: true },
-  { title: t('common.actions'), key: 'actions', sortable: false, align: 'end' },
+  { title: t('common.actions'), key: 'actions', sortable: false, align: 'end' as const },
 ])
 
 // Validation rules

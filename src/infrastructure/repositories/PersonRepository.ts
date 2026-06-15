@@ -3,7 +3,6 @@ import type {
   CreatePersonDTO,
   UpdatePersonDTO,
   PersonListResponse,
-  PersonApiResponse,
 } from '@/domain/repositories/IPersonRepository'
 import type { Person } from '@/domain/entities/Person'
 import { httpClient } from '../http/httpClient'

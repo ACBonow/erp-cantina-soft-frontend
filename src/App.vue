@@ -12,7 +12,7 @@ import { useTheme } from '@/composables/useTheme'
 import DefaultLayout from '@/presentation/layouts/DefaultLayout.vue'
 
 const authStore = useAuthStore()
-const { isDark } = useTheme()
+useTheme()
 const appError = ref<string | null>(null)
 
 // Inicializar autenticação do localStorage

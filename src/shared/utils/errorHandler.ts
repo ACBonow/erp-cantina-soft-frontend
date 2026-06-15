@@ -1,4 +1,4 @@
-import type { I18n } from 'vue-i18n'
+import type { ComposerTranslation } from 'vue-i18n'
 
 /**
  * Maps backend error messages to i18n translation keys
@@ -94,7 +94,7 @@ export function getErrorMessageKey(errorMessage: string): string {
 /**
  * Translates backend error message to user-friendly message
  */
-export function translateError(error: any, t: I18n['global']['t']): string {
+export function translateError(error: any, t: ComposerTranslation): string {
   // Extract error message
   let errorMessage = error?.message || error?.error || 'Unknown error'
 
@@ -120,7 +120,7 @@ export function isNetworkError(error: any): boolean {
 /**
  * Gets user-friendly error message with fallback
  */
-export function getUserFriendlyError(error: any, t: I18n['global']['t']): string {
+export function getUserFriendlyError(error: any, t: ComposerTranslation): string {
   if (isNetworkError(error)) {
     return t('error.network')
   }

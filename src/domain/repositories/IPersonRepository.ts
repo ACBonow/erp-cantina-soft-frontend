@@ -11,6 +11,7 @@ export interface CreatePersonDTO {
 
 export interface UpdatePersonDTO {
   name?: string
+  cpf?: string
   email?: string
   phone?: string
   birthDate?: string

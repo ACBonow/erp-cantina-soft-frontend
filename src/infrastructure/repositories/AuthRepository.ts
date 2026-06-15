@@ -3,7 +3,6 @@ import type {
   LoginDTO,
   RegisterDTO,
   AuthResponse,
-  ApiResponse,
   VerifyTokenResponse,
 } from '@/domain/repositories/IAuthRepository'
 import type { User } from '@/domain/entities/User'
