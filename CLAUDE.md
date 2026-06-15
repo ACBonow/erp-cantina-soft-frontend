@@ -73,6 +73,7 @@ src/
 | `/people` | PeoplePage | admin / manager |
 | `/categories` | CategoriesPage | admin / manager |
 | `/pdv` | PDVPage | Autenticado |
+| `/customers` | CustomersPage | admin / manager |
 | `/products` | ProductsPage | admin / manager |
 | `/inventory` | InventoryPage | admin / manager |
 
@@ -150,3 +151,4 @@ Sem suite de testes configurada.
 - `AUTHENTICATION_FLOW.md` — fluxo de autenticação
 - `UI_DOCUMENTATION.md` — documentação de componentes UI
 - `FRONTEND_STATUS.md` — status de implementação e roadmap
+- `AUDIT_2026-06.md` — auditoria de prontidão (build/lint/type-check/TDD) e changelog de correções
