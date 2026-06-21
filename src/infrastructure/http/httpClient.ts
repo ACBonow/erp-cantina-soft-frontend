@@ -30,10 +30,18 @@ export class HttpClient {
     this.client.interceptors.response.use(
       (response) => response,
       (error) => {
-        // Handle 401 Unauthorized - redirect to login
+        // Handle 401 Unauthorized - redirect to login, but only for authenticated requests
+        // (not for the login/register/verify endpoints themselves)
         if (error.response?.status === 401) {
-          localStorage.removeItem('token')
-          window.location.href = '/login'
+          const url = error.config?.url ?? ''
+          const isAuthEndpoint =
+            url.includes('/auth/login') ||
+            url.includes('/auth/register') ||
+            url.includes('/auth/verify')
+          if (!isAuthEndpoint) {
+            localStorage.removeItem('token')
+            window.location.href = '/login'
+          }
         }
 
         // Extract error message from backend response
