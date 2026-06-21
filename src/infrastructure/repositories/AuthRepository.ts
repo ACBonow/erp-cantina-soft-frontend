@@ -65,6 +65,14 @@ export class AuthRepository implements IAuthRepository {
     localStorage.removeItem('token')
     localStorage.removeItem('user')
   }
+
+  async forgotPassword(email: string): Promise<void> {
+    await httpClient.post('/auth/forgot-password', { email })
+  }
+
+  async resetPassword(token: string, password: string): Promise<void> {
+    await httpClient.post('/auth/reset-password', { token, password })
+  }
 }
 
 export const authRepository = new AuthRepository()

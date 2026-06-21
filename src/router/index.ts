@@ -22,6 +22,24 @@ const routes: RouteRecordRaw[] = [
     },
   },
   {
+    path: '/forgot-password',
+    name: 'forgot-password',
+    component: () => import('@/presentation/pages/ForgotPasswordPage.vue'),
+    meta: {
+      title: 'Esqueci a Senha',
+      requiresAuth: false,
+    },
+  },
+  {
+    path: '/reset-password',
+    name: 'reset-password',
+    component: () => import('@/presentation/pages/ResetPasswordPage.vue'),
+    meta: {
+      title: 'Redefinir Senha',
+      requiresAuth: false,
+    },
+  },
+  {
     path: '/dashboard',
     name: 'dashboard',
     component: () => import('@/presentation/pages/DashboardPage.vue'),

@@ -60,6 +60,17 @@
                   <v-icon start>mdi-login</v-icon>
                   Entrar
                 </v-btn>
+
+                <div class="text-center mt-4">
+                  <v-btn
+                    variant="text"
+                    size="small"
+                    color="primary"
+                    @click="router.push('/forgot-password')"
+                  >
+                    Esqueci minha senha
+                  </v-btn>
+                </div>
               </v-form>
             </v-card-text>
           </v-card>

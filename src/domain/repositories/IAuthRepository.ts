@@ -38,4 +38,6 @@ export interface IAuthRepository {
   register(data: RegisterDTO): Promise<AuthResponse>
   verifyToken(): Promise<{ valid: boolean; user?: User }>
   logout(): void
+  forgotPassword(email: string): Promise<void>
+  resetPassword(token: string, password: string): Promise<void>
 }

@@ -86,6 +86,32 @@ export const useAuthStore = defineStore('auth', () => {
     error.value = null
   }
 
+  async function forgotPassword(email: string) {
+    loading.value = true
+    error.value = null
+    try {
+      await authRepository.forgotPassword(email)
+    } catch (err: any) {
+      error.value = err.message || 'Erro ao solicitar redefinição de senha'
+      throw err
+    } finally {
+      loading.value = false
+    }
+  }
+
+  async function resetPassword(token: string, password: string) {
+    loading.value = true
+    error.value = null
+    try {
+      await authRepository.resetPassword(token, password)
+    } catch (err: any) {
+      error.value = err.message || 'Erro ao redefinir senha'
+      throw err
+    } finally {
+      loading.value = false
+    }
+  }
+
   function initializeFromStorage() {
     const storedToken = localStorage.getItem('token')
     const storedUser = localStorage.getItem('user')
@@ -115,6 +141,8 @@ export const useAuthStore = defineStore('auth', () => {
     register,
     verifyToken,
     logout,
+    forgotPassword,
+    resetPassword,
     initializeFromStorage,
   }
 })
