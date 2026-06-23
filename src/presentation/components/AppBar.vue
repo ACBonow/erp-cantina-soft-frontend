@@ -2,6 +2,7 @@
   <v-app-bar color="primary" prominent>
     <v-app-bar-nav-icon @click="$emit('toggleDrawer')" />
 
+    <img :src="logoMark" alt="" width="28" height="28" class="ml-1 mr-3" />
     <v-toolbar-title class="font-weight-bold">
       {{ t('app.name') }}
     </v-toolbar-title>
@@ -70,6 +71,7 @@ import { useAuthStore } from '@/store/auth'
 import { useTheme } from '@/composables/useTheme'
 import { useLocale } from '@/composables/useLocale'
 import { useNotification } from '@/composables/useNotification'
+import logoMark from '@/assets/brand/logo-mark-knockout.svg'
 
 defineEmits(['toggleDrawer'])
 

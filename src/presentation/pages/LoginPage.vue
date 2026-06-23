@@ -5,7 +5,7 @@
         <v-col cols="12" sm="8" md="6" lg="4">
           <v-card elevation="8" class="mx-auto">
             <v-card-title class="text-h4 text-center py-6 bg-primary">
-              <v-icon size="48" class="mr-2">mdi-food</v-icon>
+              <img :src="logoMark" alt="" width="48" height="48" class="mr-2" />
               CantinaSoft
             </v-card-title>
 
@@ -85,6 +85,7 @@ import { ref } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useAuthStore } from '@/store/auth'
 import { isValidEmailOrCPF } from '@/shared/utils/validators'
+import logoMark from '@/assets/brand/logo-mark-knockout.svg'
 
 const router = useRouter()
 const route = useRoute()

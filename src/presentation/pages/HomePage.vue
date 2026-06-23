@@ -6,7 +6,7 @@
         <v-row align="center" justify="center">
           <v-col cols="12" md="8" lg="6" class="text-center">
             <div class="hero-content">
-              <v-icon size="100" color="primary" class="mb-6">mdi-food</v-icon>
+              <img :src="logoMark" alt="CantinaSoft" width="100" height="100" class="mb-6" />
               <h1 class="text-h2 text-md-h1 font-weight-bold mb-4">
                 CantinaSoft
               </h1>
@@ -152,6 +152,7 @@
 
 <script setup lang="ts">
 import { useRouter } from 'vue-router'
+import logoMark from '@/assets/brand/logo-mark-light.svg'
 
 const router = useRouter()
 
